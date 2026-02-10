@@ -13,3 +13,7 @@
     to have sustomise potential 
 - add momory states to remember if console and terminal were
      open or closed
+    
+> TODO MORE GENERAL
+- fix it so there are in the same package family with your other tools 
+- good instructions examples 

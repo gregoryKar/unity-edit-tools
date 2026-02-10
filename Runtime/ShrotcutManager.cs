@@ -5,152 +5,153 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShortcutManager : MonoBehaviour
+namespace karianakisEditTools
 {
 
-
-
-
-
-
-    static ShortcutManager _instForbidden;
-    public static ShortcutManager _inst
+    public class ShortcutManager : MonoBehaviour
     {
-        get
+
+
+
+
+
+
+        static ShortcutManager _instForbidden;
+        public static ShortcutManager _inst
         {
-            if (_instForbidden == null)
+            get
             {
-                var obj = new GameObject("ShortcutManager");
+                if (_instForbidden == null)
+                {
+                    var obj = new GameObject("ShortcutManager");
 
-                _instForbidden = obj.AddComponent<ShortcutManager>();
-                obj.transform.SetParent(EditSuitFather._inst.transform, true);
-            }
+                    _instForbidden = obj.AddComponent<ShortcutManager>();
+                    obj.transform.SetParent(EditSuitFather._inst.transform, true);
+                }
 
-            return _instForbidden;
-
-        }
-        set { _instForbidden = value; }
-
-
-
-    }
-
-
-
-    void Update()
-    {
-        CurrentPressedKeys.Clear();
-        CurrentPressedDownKeys.Clear();
-
-        if (Input.anyKey is false) return;
-
-
-        foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
-        {
-            if (Input.GetKey(key))
-            {
-                CurrentPressedKeys.Add(key);
-
-                if (Input.GetKeyDown(key))
-                    CurrentPressedDownKeys.Add(key);
+                return _instForbidden;
 
             }
+            set { _instForbidden = value; }
+
+
+
         }
 
-        foreach (var item in _shortcutList)
+
+
+        void Update()
         {
-            ProcessShortcut(item);
-        }
+            CurrentPressedKeys.Clear();
+            CurrentPressedDownKeys.Clear();
+
+            if (Input.anyKey is false) return;
 
 
-
-    }
-
-    HashSet<KeyCode> CurrentPressedKeys = new HashSet<KeyCode>();
-    HashSet<KeyCode> CurrentPressedDownKeys = new HashSet<KeyCode>();
-
-    List<ShortcutAction> _shortcutList = new();
-
-    [SerializeField] string[] _shortcutDebugArray;
-    void DebbugShortcuts()
-    {
-
-        _shortcutDebugArray = new string[_shortcutList.Count];
-        for (int i = 0; i < _shortcutList.Count; i++)
-        {
-            _shortcutDebugArray[i] = _shortcutList[i]._commandStringId;
-
-            _shortcutDebugArray[i] += " :: ";
-            foreach (var item in _shortcutList[i]._keys)
+            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
-                _shortcutDebugArray[i] += "-" + item.ToString();
+                if (Input.GetKey(key))
+                {
+                    CurrentPressedKeys.Add(key);
+
+                    if (Input.GetKeyDown(key))
+                        CurrentPressedDownKeys.Add(key);
+
+                }
             }
-        }
-    }
 
-
-
-    public static void AddShortcut(ShortcutAction shortcut)
-    {
-
-        if (_inst._shortcutList.Contains(shortcut)) return;
-
-        foreach (var item in _inst._shortcutList)
-        {
-            if (item._commandStringId == shortcut._commandStringId)
+            foreach (var item in _shortcutList)
             {
-                Debug.LogError("Shortcut with command string id " + shortcut._commandStringId + " already exists. Skipping adding this shortcut.");
-                return;
+                ProcessShortcut(item);
+            }
+
+
+
+        }
+
+        HashSet<KeyCode> CurrentPressedKeys = new HashSet<KeyCode>();
+        HashSet<KeyCode> CurrentPressedDownKeys = new HashSet<KeyCode>();
+
+        List<ShortcutAction> _shortcutList = new();
+
+        [SerializeField] string[] _shortcutDebugArray;
+        void DebbugShortcuts()
+        {
+
+            _shortcutDebugArray = new string[_shortcutList.Count];
+            for (int i = 0; i < _shortcutList.Count; i++)
+            {
+                _shortcutDebugArray[i] = _shortcutList[i]._commandStringId;
+
+                _shortcutDebugArray[i] += " :: ";
+                foreach (var item in _shortcutList[i]._keys)
+                {
+                    _shortcutDebugArray[i] += "-" + item.ToString();
+                }
             }
         }
 
-        _inst._shortcutList.Add(shortcut);
-        _inst.DebbugShortcuts();
-
-    }
-    void ProcessShortcut(ShortcutAction shortcut)
-    {
-
-        /* if multiple shortcuts you dont want only on down .. ..
-         if single looks on down , if multiple ?? 
-         maybe the last one must be on down .. 
-        */
-
-        bool allKeys = true;
-        bool anyKeyDown = false;
 
 
-        foreach (var item in shortcut._keys)
+        public static void AddShortcut(ShortcutAction shortcut)
         {
-            if (CurrentPressedKeys.Contains(item) is false)
-                allKeys = false;
 
-            if (CurrentPressedDownKeys.Contains(item)) anyKeyDown = true;
+            if (_inst._shortcutList.Contains(shortcut)) return;
+
+            foreach (var item in _inst._shortcutList)
+            {
+                if (item._commandStringId == shortcut._commandStringId)
+                {
+                    Debug.LogError("Shortcut with command string id " + shortcut._commandStringId + " already exists. Skipping adding this shortcut.");
+                    return;
+                }
+            }
+
+            _inst._shortcutList.Add(shortcut);
+            _inst.DebbugShortcuts();
+
+        }
+        void ProcessShortcut(ShortcutAction shortcut)
+        {
+
+            /* if multiple shortcuts you dont want only on down .. ..
+             if single looks on down , if multiple ?? 
+             maybe the last one must be on down .. 
+            */
+
+            bool allKeys = true;
+            bool anyKeyDown = false;
+
+
+            foreach (var item in shortcut._keys)
+            {
+                if (CurrentPressedKeys.Contains(item) is false)
+                    allKeys = false;
+
+                if (CurrentPressedDownKeys.Contains(item)) anyKeyDown = true;
+            }
+
+            bool lastKeyDown = CurrentPressedDownKeys.Contains(shortcut._keys[shortcut._keys.Length - 1]);
+
+
+
+
+            if (anyKeyDown is false) return;
+            if (shortcut._anyKeyIsEnough is false)
+            {
+                if (lastKeyDown is false) return;
+                if (allKeys is false) return;
+            }
+
+
+
+            shortcut._action.Invoke();
+
+
         }
 
-        bool lastKeyDown = CurrentPressedDownKeys.Contains(shortcut._keys[shortcut._keys.Length - 1]);
-
-
-
-
-        if (anyKeyDown is false) return;
-        if (shortcut._anyKeyIsEnough is false)
-        {
-            if (lastKeyDown is false) return;
-            if (allKeys is false) return;
-        }
-
-
-
-        shortcut._action.Invoke();
 
 
     }
-
-
-
-
-
-
 
 }

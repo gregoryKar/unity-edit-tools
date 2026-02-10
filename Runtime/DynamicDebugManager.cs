@@ -1,13 +1,11 @@
 using UnityEngine;
 using System;
-
-
 using System.Collections.Generic;
 using UnityEngine.UI;
 using kar_main_utils;
 
 
-namespace my3dtest
+namespace karianakisEditTools
 {
 
     public class DynamicDebugManager : MonoBehaviour
@@ -111,6 +109,7 @@ namespace my3dtest
          , new Vector2(1, 1f));
 
             _tmpTemplate = obj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+            _tmpTemplate.gameObject.SetActive(false);
             _containerObj = obj;
 
         }

@@ -1,81 +1,83 @@
 
 
 
-using System;
-using Sirenix.OdinInspector;
+
 using UnityEngine;
 
-public class EditSuitFather : MonoBehaviour
+namespace karianakisEditTools
 {
 
-    static EditSuitFather _instForbidden;
-    public static EditSuitFather _inst
+    public class EditSuitFather : MonoBehaviour
     {
-        get
-        {
-            if (_instForbidden == null)
-            {
-                var obj = new GameObject("EDIT-SUIT-FATHER");
-                var rect = obj.AddComponent<RectTransform>();
-                rect.anchoredPosition = Vector2.zero;
 
-                _instForbidden = obj.AddComponent<EditSuitFather>();
-                _instForbidden.FindAndSetParentCanvas();
+        static EditSuitFather _instForbidden;
+        public static EditSuitFather _inst
+        {
+            get
+            {
+                if (_instForbidden == null)
+                {
+                    var obj = new GameObject("EDIT-SUIT-FATHER");
+                    var rect = obj.AddComponent<RectTransform>();
+                    rect.anchoredPosition = Vector2.zero;
+
+                    _instForbidden = obj.AddComponent<EditSuitFather>();
+                    _instForbidden.FindAndSetParentCanvas();
+
+                }
+
+                return _instForbidden;
+
+            }
+            set { _instForbidden = value; }
+
+
+
+        }
+
+
+
+
+
+        RectTransform _canvas;
+        public RectTransform GetCanvas() => _canvas;
+        void FindAndSetParentCanvas()
+        {
+
+            _canvas = null;
+            foreach (var canvasItem in FindObjectsByType<Canvas>(FindObjectsSortMode.InstanceID))
+            {
+                if (canvasItem.renderMode == RenderMode.WorldSpace)
+                    continue;
+
+                _canvas = canvasItem.GetComponent<RectTransform>();
+                break;
 
             }
 
-            return _instForbidden;
+            if (_canvas == null) Debug.LogError("NULL CANVAS FOUND FOR EDITSUITFATHER");
+            else transform.SetParent(_canvas.transform, false);
 
         }
-        set { _instForbidden = value; }
 
 
 
-    }
-
-
-
-
-
-    RectTransform _canvas;
-    public RectTransform GetCanvas() => _canvas;
-    void FindAndSetParentCanvas()
-    {
-
-        _canvas = null;
-        foreach (var canvasItem in FindObjectsByType<Canvas>(FindObjectsSortMode.InstanceID))
+        // 0,0 : bottom left , 1,1 : top right
+        public void SetPosRelativeToScreen(RectTransform rect, Vector2 normalizedScreenPos)
         {
-            if (canvasItem.renderMode == RenderMode.WorldSpace)
-                continue;
+            Vector2 screenPos = new Vector2(
+                normalizedScreenPos.x * Camera.main.pixelWidth,
+                normalizedScreenPos.y * Camera.main.pixelHeight
+            );
 
-            _canvas = canvasItem.GetComponent<RectTransform>();
-            break;
+            Vector3 posVek3 = screenPos;
+            posVek3.z = rect.position.z;
 
+            Debug.LogError(posVek3);
+
+            rect.position = posVek3;
         }
 
-        if (_canvas == null) Debug.LogError("NULL CANVAS FOUND FOR EDITSUITFATHER");
-        else transform.SetParent(_canvas.transform, false);
 
     }
-
-
-
-    // 0,0 : bottom left , 1,1 : top right
-    public void SetPosRelativeToScreen(RectTransform rect, Vector2 normalizedScreenPos)
-    {
-        Vector2 screenPos = new Vector2(
-            normalizedScreenPos.x * Camera.main.pixelWidth,
-            normalizedScreenPos.y * Camera.main.pixelHeight
-        );
-
-        Vector3 posVek3 = screenPos;
-        posVek3.z = rect.position.z;
-
-        Debug.LogError(posVek3);
-
-        rect.position = posVek3;
-    }
-
-
-
 }
