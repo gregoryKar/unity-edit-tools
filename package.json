@@ -9,7 +9,8 @@
   "author": {
     "name": "karianakis" ,
     "dependencies": {
-    "com.unity.textmeshpro": "2.0.0"
+          "com.unity.textmeshpro": "2.0.0" ,
+           "com.karianakis.utilities": "https://github.com/gregoryKar/karianakis.utilities.git"
   }
 
   }

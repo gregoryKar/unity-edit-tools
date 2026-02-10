@@ -1,8 +1,10 @@
 using UnityEngine;
 using System;
-using kar_main_utils;
+
+
 using System.Collections.Generic;
 using UnityEngine.UI;
+using kar_main_utils;
 
 
 namespace my3dtest
@@ -198,6 +200,7 @@ namespace my3dtest
             {
                 item.Refresh();
             }, interval);
+
 
 
         }
