@@ -11,6 +11,6 @@
  
   "dependencies": {
     "com.unity.textmeshpro": "2.0.0",
-    "com.karianakis.utilities": "https://github.com/gregoryKar/unity-utilities.git"
+    "com.karianakis.utilities": "1.0.3"
   }
 }
