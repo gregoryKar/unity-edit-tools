@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using kar_main_utils;
 
 
-namespace karianakisEditTools
+namespace Karianakis.EditTools
 {
 
     public class DynamicDebugManager : MonoBehaviour
