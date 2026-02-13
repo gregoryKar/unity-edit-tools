@@ -3,7 +3,8 @@
     "rootNamespace": "Karianakis.EditTools",
     "references": [
         "Unity.TextMeshPro",
-        "Karianakis.Utilities"
+        "Karianakis.Utilities",
+        "wrongAssembly"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
