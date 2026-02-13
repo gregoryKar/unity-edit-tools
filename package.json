@@ -1,21 +1,16 @@
-
-
 {
   "name": "com.karianakis.edittools",
   "version": "1.0.0",
   "displayName": "karianakis.edittools",
+
   "description": "IMPROVE.. -> TERMINAL : add commands to execute in runtime like git bash  ,example add command shoot , you open terminal with space q and type shoot and enter and it will execute the shoot command that you added in code              ,    SHORTCUTS : add an action and a key combination to execute it in runtime , example add action shoot and assign it to space q and in runtime when you press space q it will execute the shoot action that you added in code           DYNAMIC DEBUG : create a text on screen in runtime and change its text to debug in runtime without using Debug.Log and searching in console",
 
   "author": {
-    "name": "karianakis" ,
-    "dependencies": {
-          "com.unity.textmeshpro": "2.0.0" ,
-           "com.karianakis.utilities": "https://github.com/gregoryKar/unity-utilities.git"
+    "name": "karianakis"
+  },
+ 
+  "dependencies": {
+    "com.unity.textmeshpro": "2.0.0",
+    "com.karianakis.utilities": "https://github.com/gregoryKar/unity-utilities.git"
   }
-
-  }
-
-  
-
-
 }
