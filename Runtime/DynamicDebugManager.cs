@@ -236,7 +236,7 @@ namespace Karianakis.EditTools
 
         string _content;
         Color _color;
-        KarianakisTag _karianakisTag;
+        KarianakisTagManager.KarianakisTag _karianakisTag;
 
     
         public bool _printCount;
