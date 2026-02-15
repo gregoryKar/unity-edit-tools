@@ -2,10 +2,10 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using kar_main_utils;
+using Karianakis.Utilities;
 
 
-namespace karianakisEditTools
+namespace Karianakis.EditTools
 {
 
     public class DynamicDebugManager : MonoBehaviour

@@ -4,7 +4,7 @@
 
 using UnityEngine;
 
-namespace karianakisEditTools
+namespace Karianakis.EditTools
 {
 
     public class EditSuitFather : MonoBehaviour

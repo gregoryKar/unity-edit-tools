@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace karianakisEditTools
+namespace Karianakis.EditTools
 {
 
     public class ShortcutManager : MonoBehaviour
