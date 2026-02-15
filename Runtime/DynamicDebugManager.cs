@@ -238,7 +238,7 @@ namespace Karianakis.EditTools
         Color _color;
         KarianakisTagManager.KarianakisTag _karianakisTag;
 
-
+    
         public bool _printCount;
         int _updateCount = 0;
         bool _lastEnabledState = true;

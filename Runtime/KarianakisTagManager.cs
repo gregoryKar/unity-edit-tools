@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace karianakisEditTools
+namespace Karianakis.EditTools
 {
     public class KarianakisTagManager : MonoBehaviour
     {
