@@ -11,6 +11,9 @@ namespace karianakisEditTools
     public class EditTerminal : MonoBehaviour
     {
 
+
+        //! SET ALL TO LOWER CASE INTERNALY
+
         /*
         use input manager that handles the inputs and you
         just link an action to an input .. for now just update
@@ -18,6 +21,8 @@ namespace karianakisEditTools
         when text empty displays the top used commands
         */
 
+
+        // inputText from raw to fancy
 
 
 
@@ -49,75 +54,6 @@ namespace karianakisEditTools
         }
 
 
-        void CreateGraphicsDepricated()
-        {
-
-
-            return;
-            return;
-            return;
-
-            var rect = gameObject.AddComponent<RectTransform>();
-            rect.name = "EditTerminal";
-            //rect.gameObject.AddComponent<EditTerminal>();
-
-            //var canvas = FindFirstObjectByType<Canvas>();
-
-
-
-
-            rect.pivot = new Vector2(0, 0.5f);
-            rect.anchorMin = new Vector2(0, .5f);
-            rect.anchorMax = new Vector2(0, .5f);
-
-            var _image = new GameObject("Image + Layout").AddComponent<Image>();
-            _image.rectTransform.SetParent(rect, false);
-            _image.color = new Color(0, 0, 0, 0.9f);
-            _image.rectTransform.sizeDelta = new Vector2(150, 150);
-
-            _image.rectTransform.pivot = new Vector2(0, 0.5f);
-            _image.rectTransform.anchorMin = new Vector2(0, .5f);
-            _image.rectTransform.anchorMax = new Vector2(0, .5f);
-
-
-            var tmp = new GameObject("Input").AddComponent<TMPro.TextMeshProUGUI>();
-            tmp.rectTransform.SetParent(_image.rectTransform, false);
-            tmp.rectTransform.sizeDelta = new Vector2(150, 25);
-            tmp.rectTransform.anchoredPosition = new Vector2(0, 50);
-
-            tmp.rectTransform.pivot = new Vector2(0, 0.5f);
-            tmp.rectTransform.anchorMin = new Vector2(0, .5f);
-            tmp.rectTransform.anchorMax = new Vector2(0, .5f);
-            tmp.fontSize = 16;
-
-            tmp.text = "---";
-
-            var suggestions = Instantiate(tmp.gameObject, tmp.transform.parent).GetComponent<TMPro.TextMeshProUGUI>();
-
-            suggestions.name = "Suggestions";
-            suggestions.text = "text -> press Enter";
-            suggestions.color = new Color(1, 1, 1, 0.2f);
-
-
-            var layout = _image.gameObject.AddComponent<VerticalLayoutGroup>();
-
-            layout.padding = new RectOffset(5, 5, 5, 0);
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = false;
-
-
-
-            _consoleObj = _image.gameObject;
-            _input = tmp;
-            _suggestions = suggestions;
-
-
-        }
-
-
         void CreatePreffabGraphics()
         {
             const string _preffabCode = "EditTerminalLayout";
@@ -129,7 +65,7 @@ namespace karianakisEditTools
             , new Vector2(0, 0.5f));
 
             _consoleObj = obj;
-            _input = obj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+            _inputDisplayText = obj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
             _suggestions = obj.GetComponentsInChildren<TMPro.TextMeshProUGUI>()[1];
 
 
@@ -141,6 +77,13 @@ namespace karianakisEditTools
 
         private void Start()
         {
+
+            rawInput = "";
+            _inputWords = new string[] { " " };
+
+
+
+
             AddCommand("test", () => Debug.Log("chat suggested : marinakis is the best .. after i said marinakis"));
 
 
@@ -151,6 +94,7 @@ namespace karianakisEditTools
             ShortcutAction.Create("EditTerminal : NextSuggestion", () => SelectNextSuggestion(1), KeyCode.DownArrow);
 
             ShortcutAction.Create("EditTerminal : PreviousSuggestion", () => SelectNextSuggestion(-1), KeyCode.UpArrow);
+
 
 
 
@@ -166,8 +110,117 @@ namespace karianakisEditTools
 
 
         GameObject _consoleObj;
-        TMPro.TextMeshProUGUI _input;
+
+        string _rawInputForbidden;
+        string rawInput
+        {
+            get
+            {
+                return _rawInputForbidden;
+            }
+            set
+            {
+                _rawInputForbidden = value;
+                _inputWords = _rawInputForbidden.Split(' ', '_');
+                RefreshTextGraphicsForbidden();
+                Colorise();
+
+
+                DisplaySuggestionsForbidden();
+
+            }
+        }
+
+
+        string[] _inputWords;
+        TMPro.TextMeshProUGUI _inputDisplayText;
         TMPro.TextMeshProUGUI _suggestions;
+
+        void RefreshTextGraphicsForbidden()
+        {
+            if (rawInput.Length < 1)
+            {
+                _inputDisplayText.text = "-- write here noob --";
+                return;
+            }
+
+            var outputWords = Colorise();
+
+
+            if (outputWords.Length <= 1)
+            {
+                _inputDisplayText.text = outputWords[0];
+                // if (rawInput.Last() == ' ' || rawInput.Last() == '_') { _inputDisplayText.text += "<color=grey>_"; }
+            }
+            else
+            {
+                _inputDisplayText.text = string.Join("_", outputWords.ToArray());
+
+                // if (rawInput.Last() == ' ' || rawInput.Last() == '_') { _inputDisplayText.text += "_"; }
+
+
+            }
+
+        }
+
+
+
+        [SerializeField] Color _commandColor = Color.green;
+        [SerializeField] Color _tagCollor = Color.blue;
+        [SerializeField] Color _numberColor = Color.green;
+        [SerializeField] Color _booleanColor = Color.red;
+        string[] Colorise()
+        {
+
+            string[] coloredWords = _inputWords.ToArray();
+
+            //! TO GLOBAL STRING UTILITIES
+            string WrapWordWithColor(string word, Color col)
+              => $"<color=#{ColorUtility.ToHtmlStringRGB(col)}>{word}</color>";
+
+
+            //first word for command
+            if (_commands.ContainsKey(_inputWords[0]))
+            {
+                coloredWords[0] = WrapWordWithColor(coloredWords[0], _commandColor);
+            }
+
+            //tags
+            for (int i = 1; i < _inputWords.Length; i++)
+            {
+                if (KarianakisTagManager.CheckTagExists(_inputWords[i])) coloredWords[i]
+                = WrapWordWithColor(coloredWords[i], _tagCollor);
+            }
+
+            //numbers
+            for (int i = 1; i < _inputWords.Length; i++)
+            {
+                if (int.TryParse(_inputWords[i], out var integeri))
+                    coloredWords[i]
+                    = WrapWordWithColor(coloredWords[i], _numberColor);
+                else if (float.TryParse(_inputWords[i], out var flotari))
+                    coloredWords[i]
+                    = WrapWordWithColor(coloredWords[i], _numberColor);
+            }
+
+            //true/false
+            for (int i = 1; i < _inputWords.Length; i++)
+            {
+
+                if (_inputWords[i].ToLower() == "true" || _inputWords[i].ToLower() == "false") coloredWords[i] = WrapWordWithColor(coloredWords[i], _booleanColor);
+
+            }
+
+            return coloredWords;
+
+
+
+
+
+
+
+        }
+
 
         void Update()
         {
@@ -177,13 +230,14 @@ namespace karianakisEditTools
             if (GetConsoleOpenStatus is false) return;
 
             Process();
-            ColorChange();
 
 
 
 
 
         }
+
+
 
 
         void ChangePanelOpenCloseState()
@@ -192,10 +246,6 @@ namespace karianakisEditTools
             _consoleObj.SetActive(newState);
         }
         bool GetConsoleOpenStatus => _consoleObj.activeSelf;
-
-
-
-
 
 
 
@@ -268,26 +318,19 @@ namespace karianakisEditTools
 
 
 
-        void ColorChange()
-        {
-            if (_input.text.Length <= 0) { }
-            else if (_commands.ContainsKey(_input.text))
-                _input.color = _correctCommandColor;
-            else
-                _input.color = _wrongCommandColor;
-        }
 
 
-        void DisplaySuggestions()
+
+        void DisplaySuggestionsForbidden()
         {
 
-            if (_input.text.Length <= 0)
-            {
-                _suggestions.text = "- - -";
-                return;
-            }
+            if (_suggestionList.Contains(rawInput)) return;
+            if (rawInput.Length < 1) return;
 
-            _suggestionList = GetTop3ClosestCommands(_input.text);
+            string firstWord = _inputWords[0];
+            // _inputRaw.Split(' ')[0];
+
+            _suggestionList = GetTop3ClosestCommands(firstWord);
             _suggestions.text = "- \n ";
             _suggestions.text += string.Join("\n ", _suggestionList);
 
@@ -307,7 +350,9 @@ namespace karianakisEditTools
 
             else if (_suggestionIndex < 0) _suggestionIndex = _suggestionList.Count - 1;
 
-            _input.text = _suggestionList[_suggestionIndex];
+
+            rawInput = _suggestionList[_suggestionIndex];
+
 
         }
 
@@ -322,19 +367,18 @@ namespace karianakisEditTools
             {
                 if (c == '\b') // backspace
                 {
-                    if (_input.text.Length > 0)
-                        _input.text = _input.text.Substring(0, _input.text.Length - 1);
+                    if (rawInput.Length > 0)
+                        rawInput = rawInput.Substring(0, rawInput.Length - 1);
                 }
                 else if (c == '\n' || c == '\r') // enter/return
                 {
                     // ExecuteCommand(_input.text);
                     // _input.text = "";
                 }
-                else
-                {
-                    _input.text += c;
-                    DisplaySuggestions();
-                }
+                else rawInput += c;
+
+
+
             }
 
 
@@ -342,43 +386,54 @@ namespace karianakisEditTools
         }
 
         void ClearAllInput()
-        {
-            _input.text = "";
-            DisplaySuggestions();
-        }
-
-
-
-
+             => rawInput = "";
 
 
 
 
         void Execute()
         {
-            ExecuteCommand(_input.text);
-            _input.text = "";
+            if (rawInput.Length < 1) return;
+
+
+            var wordsList = rawInput.Split(' ').ToList();
+            wordsList.RemoveAt(0);
+
+            string[] variables;
+            if (wordsList.Count > 0) variables = wordsList.ToArray(); else variables = new string[0];
+
+            for (int i = 0; i < variables.Length; i++)
+            {
+                variables[i] = variables[i].ToLower();
+            }
+
+            ExecuteCommand(_inputWords[0], variables);
+            rawInput = "";
         }
 
 
-        void ExecuteCommand(string code)
+        void ExecuteCommand(string code, string[] variables)
         {
 
-            if (_commands.ContainsKey(code))
-                _commands[code].Invoke();
+            if (_commands.ContainsKey(code.ToLower()))
+                _commands[code.ToLower()].Invoke(variables);
             else
                 WrongCommandMessage(code);
             //Debug.LogError("Command not found: " + code);
 
         }
-        Dictionary<string, Action> _commands = new();
+        Dictionary<string, Action<string[]>> _commands = new();
+
 
         public static void AddCommand(string code, Action action)
-        => _inst._commands[code] = action;
+        => _inst._commands[code.ToLower()] = (args) => { action.Invoke(); };
+        public static void AddCommand(string code, Action<string[]> action)
+        => _inst._commands[code.ToLower()] = action;
 
 
 
 
+        //! PUT TO TEXT UTILITIES
 
         void WrongCommandMessage(string code)
         {

@@ -18,6 +18,8 @@ namespace karianakisEditTools
 
         */
 
+        //! WHY SEPERATION OF WITH NEW CALSS AND SAY ???
+        
 
 
 
@@ -118,6 +120,8 @@ namespace karianakisEditTools
         void Start()
         {
             ShortcutAction.Create("EditDebuggerToggle", () => ChangeVissibility(), _toggleKeys);
+
+            KarianakisTagManager.SubscribeToTagsChanged(RefreshAllDebuggItems);
         }
 
 
@@ -158,10 +162,10 @@ namespace karianakisEditTools
 
         private Dictionary<string, DynamicDebugger> _debugClassList = new();
 
-        public static void Say(string code, string content, bool printCount = false, Color color = default)
-        => _inst.SayLocal(code, content, printCount, color);
+        public static void Say(string code, string content, bool printCount = false, Color color = default, string tagCode = "", GameObject tagObjectReference = null)
+        => _inst.SayLocal(code, content, printCount, color, tagCode, tagObjectReference);
 
-        void SayLocal(string code, string content, bool printCount, Color color = default)
+        void SayLocal(string code, string content, bool printCount, Color color = default, string tagCode = "", GameObject tagObjectReference = null)
         {
 
 
@@ -170,7 +174,7 @@ namespace karianakisEditTools
             {
 
                 //Debug.LogWarning("mine_" + code + " : " + content);
-                new DynamicDebugger(code, content, printCount: printCount, color: color);
+                new DynamicDebugger(code, content, printCount: printCount, color: color, tagCode: tagCode, tagObjectReference: tagObjectReference);
                 // debugger._printCount = printCount;
                 // debugger.Refresh();
 
@@ -206,6 +210,16 @@ namespace karianakisEditTools
 
 
 
+        public void RefreshAllDebuggItems()
+        {
+
+            foreach (var item in _debugClassList)
+                item.Value.Refresh();
+
+
+        }
+
+
 
     }
 
@@ -222,6 +236,8 @@ namespace karianakisEditTools
 
         string _content;
         Color _color;
+        KarianakisTagManager.KarianakisTag _karianakisTag;
+
 
         public bool _printCount;
         int _updateCount = 0;
@@ -231,6 +247,10 @@ namespace karianakisEditTools
         {
             bool enabled = true;
             if (_GetEnabled != null) enabled = _GetEnabled();
+
+            if (_karianakisTag != null//! TAG DISABLED  =>  THIS DISABLED
+            && _karianakisTag._enabled == false) enabled = false;
+
             if (enabled != _lastEnabledState)
             {
                 _tmp.enabled = enabled;
@@ -261,7 +281,9 @@ namespace karianakisEditTools
         , bool printCount = false, Color color = default,
                Func<bool> Getvissible = null,
                Func<Color> Getcollor = null,
-               Func<string> GetContent = null)
+               Func<string> GetContent = null
+               , string tagCode = ""
+               , GameObject tagObjectReference = null)
         {
             _code = code;
 
@@ -273,6 +295,11 @@ namespace karianakisEditTools
 
             DynamicDebugManager.AddDynamicDebugItem(this, content, interval);
             _printCount = printCount;
+
+
+            if (tagCode != "" || tagObjectReference != null)
+                _karianakisTag =
+                KarianakisTagManager.GetOrCreateTag(tagCode, tagObjectReference);
 
             if (color != default) _tmp.color = color;
 

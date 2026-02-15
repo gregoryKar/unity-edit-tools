@@ -73,7 +73,7 @@ namespace karianakisEditTools
             Vector3 posVek3 = screenPos;
             posVek3.z = rect.position.z;
 
-            Debug.LogError(posVek3);
+            //Debug.LogError(posVek3);
 
             rect.position = posVek3;
         }
