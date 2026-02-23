@@ -19,7 +19,7 @@ namespace Karianakis.EditTools
         */
 
         //! WHY SEPERATION OF WITH NEW CALSS AND SAY ???
-        
+
 
 
 
@@ -189,6 +189,12 @@ namespace Karianakis.EditTools
         public static void AddDynamicDebugItem(DynamicDebugger item, string content, float interval)
         {
 
+            if (_inst._debugClassList.TryGetValue(item._code, out var debugger))
+            {
+                Debug.LogError("CREATED MULTIPLE DYNAMIC DEBUG ITEMS WITH THE SAME CODE : " + item._code);
+                return;
+            }
+
             Debug.LogWarning("mine_" + item._code + " : " + content);
 
             item._tmp = _inst.MakeNewTmp();
@@ -238,7 +244,7 @@ namespace Karianakis.EditTools
         Color _color;
         KarianakisTagManager.KarianakisTag _karianakisTag;
 
-    
+
         public bool _printCount;
         int _updateCount = 0;
         bool _lastEnabledState = true;
@@ -296,10 +302,16 @@ namespace Karianakis.EditTools
             DynamicDebugManager.AddDynamicDebugItem(this, content, interval);
             _printCount = printCount;
 
+            if (_tmp == null)
+            {
+                Debug.LogError("TMP IS NULL FOR CODE : " + code); return;
+            }
+
 
             if (tagCode != "" || tagObjectReference != null)
                 _karianakisTag =
                 KarianakisTagManager.GetOrCreateTag(tagCode, tagObjectReference);
+
 
             if (color != default) _tmp.color = color;
 

@@ -45,16 +45,19 @@ namespace Karianakis.EditTools
             CurrentPressedKeys.Clear();
             CurrentPressedDownKeys.Clear();
 
-            if (Input.anyKey is false) return;
+            //if (Input.anyKey is false) return;
+            if (GetAnyKey() is false) return;
 
 
             foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
-                if (Input.GetKey(key))
+                //if (Input.GetKey(key))
+                GetKey(key);
                 {
                     CurrentPressedKeys.Add(key);
 
-                    if (Input.GetKeyDown(key))
+                    //if (Input.GetKeyDown(key))
+                    if (GetKeyDown(key))
                         CurrentPressedDownKeys.Add(key);
 
                 }
@@ -148,6 +151,46 @@ namespace Karianakis.EditTools
             shortcut._action.Invoke();
 
 
+        }
+
+
+
+
+
+
+        public bool GetKey(KeyCode key)
+        {
+#if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
+            // Try new Input System first
+            return UnityEngine.InputSystem.Keyboard.current != null &&
+                   UnityEngine.InputSystem.Keyboard.current[key].isPressed
+                   || Input.GetKey(key);
+#else
+            // Fallback to legacy Input
+            return Input.GetKey(key);
+#endif
+        }
+
+        public static bool GetKeyDown(KeyCode key)
+        {
+#if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
+            return UnityEngine.InputSystem.Keyboard.current != null &&
+                   UnityEngine.InputSystem.Keyboard.current[key].wasPressedThisFrame
+                   || Input.GetKeyDown(key);
+#else
+            return Input.GetKeyDown(key);
+#endif
+        }
+
+        public static bool GetAnyKey()
+        {
+#if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
+            return (UnityEngine.InputSystem.Keyboard.current != null &&
+                    UnityEngine.InputSystem.Keyboard.current.anyKey.isPressed)
+                   || Input.anyKey;
+#else
+            return Input.anyKey;
+#endif
         }
 
 
