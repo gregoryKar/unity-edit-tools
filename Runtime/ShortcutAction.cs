@@ -33,6 +33,26 @@ namespace Karianakis.EditTools
 
         private ShortcutAction(string command, Action action, bool anyKeyIsEnough, params KeyCode[] keys)
         {
+
+
+            bool notPlayMode =
+                Application.isEditor && !Application.isPlaying;
+            string notInPlayModeWarning = "shortcut " + command + " not in play mode";
+#if KARIANAKIS
+            if (notPlayMode)
+            {
+                Debug.LogError(notInPlayModeWarning);
+                return;
+            }
+#else
+            if (notPlayMode)
+            {
+                Debug.LogWarning(notInPlayModeWarning);
+                return;
+            }
+#endif
+
+
             this._commandStringId = command;
             this._keys = keys;
             this._action = action;

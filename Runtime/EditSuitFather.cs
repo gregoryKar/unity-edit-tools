@@ -1,82 +1,81 @@
-
-
-
-
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Karianakis.EditTools
 {
 
-    public class EditSuitFather : MonoBehaviour
+    internal class EditSuitFather : MonoBehaviour
     {
 
         static EditSuitFather _instForbidden;
-        public static EditSuitFather _inst
+        static EditSuitFather _inst
         {
             get
             {
+
                 if (_instForbidden == null)
                 {
-                    var obj = new GameObject("EDIT-SUIT-FATHER");
-                    var rect = obj.AddComponent<RectTransform>();
-                    rect.anchoredPosition = Vector2.zero;
 
-                    _instForbidden = obj.AddComponent<EditSuitFather>();
-                    _instForbidden.FindAndSetParentCanvas();
+                    var obj = CreateAndConfigureVanvas();
+                    obj.name = "EDIT-SUIT-CANVAS";
+
+                    _instForbidden = obj.gameObject
+                        .AddComponent<EditSuitFather>();
+                    _instForbidden._canvasRect = obj;
 
                 }
 
                 return _instForbidden;
 
             }
-            set { _instForbidden = value; }
-
-
 
         }
 
 
+        RectTransform _canvasRect;
 
 
-
-        RectTransform _canvas;
-        public RectTransform GetCanvas() => _canvas;
-        void FindAndSetParentCanvas()
+        static RectTransform CreateAndConfigureVanvas()
         {
+            GameObject obj = new GameObject("Karianakis Canvas",
+            typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+           
+            DontDestroyOnLoad(obj);
 
-            _canvas = null;
-            foreach (var canvasItem in FindObjectsByType<Canvas>(FindObjectsSortMode.InstanceID))
+            var canvas = obj.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 69;
+
+            var scaler = obj.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.matchWidthOrHeight = 0.5f;
+
+            // var raycaster = obj.GetComponent<GraphicRaycaster>();
+            // raycaster.blockingObjects = GraphicRaycaster.BlockingObjects.None;
+
+            return obj.GetComponent<RectTransform>();
+
+        }
+
+       
+
+
+
+        //? EXPOSED
+        //? SINGLE ENTRY POINT FORBIDDEN IN NOT PLAY MODE
+        public static RectTransform GetCanvas()
+        {
+            if (Application.isPlaying == false)
             {
-                if (canvasItem.renderMode == RenderMode.WorldSpace)
-                    continue;
-
-                _canvas = canvasItem.GetComponent<RectTransform>();
-                break;
-
+                Debug.LogError("CALLED EDIT SUIT FATHER IN EDIT MODE, THIS IS NOT ALLOWED");
+                return null;
             }
 
-            if (_canvas == null) Debug.LogError("NULL CANVAS FOUND FOR EDITSUITFATHER");
-            else transform.SetParent(_canvas.transform, false);
-
+            return _inst._canvasRect;
         }
 
 
-
-        // 0,0 : bottom left , 1,1 : top right
-        public void SetPosRelativeToScreen(RectTransform rect, Vector2 normalizedScreenPos)
-        {
-            Vector2 screenPos = new Vector2(
-                normalizedScreenPos.x * Camera.main.pixelWidth,
-                normalizedScreenPos.y * Camera.main.pixelHeight
-            );
-
-            Vector3 posVek3 = screenPos;
-            posVek3.z = rect.position.z;
-
-            //Debug.LogError(posVek3);
-
-            rect.position = posVek3;
-        }
 
 
     }

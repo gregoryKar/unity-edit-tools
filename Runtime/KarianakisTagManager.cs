@@ -5,8 +5,20 @@ using UnityEngine;
 
 namespace Karianakis.EditTools
 {
-    public class KarianakisTagManager : MonoBehaviour
+    internal class KarianakisTagManager : MonoBehaviour
     {
+
+
+        /*
+        createTag with code
+        createTag with object ..
+
+        this null parameters optional is horrible ...
+    
+        tagg creation triggers event change ???
+       
+
+        */
 
 
 
@@ -17,63 +29,214 @@ namespace Karianakis.EditTools
             {
                 if (_instForbidden == null)
                 {
-                    var obj = new GameObject("KarianakisTagManager");
-                    obj.transform.SetParent(EditSuitFather._inst.transform, false);
-                    _instForbidden = obj.AddComponent<KarianakisTagManager>();
+                    // var obj = new GameObject("KarianakisTagManager");
+                    // obj.transform.SetParent(, false);
+                    _instForbidden = EditSuitFather.GetCanvas().gameObject.AddComponent<KarianakisTagManager>();
                 }
-
 
                 return _instForbidden;
 
             }
             set { _instForbidden = value; }
 
+        }
 
+
+        event Action _tagsChanged;
+        KarianakisTag _defaultTagFrobidden;
+        KarianakisTag _defaultTag
+        {
+
+            get
+            {
+                if (_defaultTagFrobidden == null)
+                {
+                    _defaultTagFrobidden = CreateTag("defaultTag", null);
+                }
+                return _defaultTagFrobidden;
+            }
 
         }
 
-        event Action _tagsChanged;
+        [SerializeField] List<KarianakisTag> _tags = new();
+
 
 
         private void Start()
         {
-            CreateTag("testtag" , gameObject);
 
-            EditTerminal.AddCommand("setTaGEnaBleD", SetTagEnabledStatusCommand);
+            // EditTerminal.AddCommand("setTaGEnaBleD", SetTagEnabledStatusCommand);
 
-            EditTerminal.AddCommand("printTags", PrintTags);
-
-          
-
-            new DynamicDebugger(
-                code: "fakeCode  0",
-                content: "test------0",
-                color: Color.cyan,
-                //tagCode: "testtag",
-                tagObjectReference : gameObject
-            );
-            new DynamicDebugger(
-            code: "fakeCode 1",
-            content: "test------1",
-            color: Color.cyan,
-            //tagCode: "testtag"
-            tagObjectReference : gameObject
-        );
-            new DynamicDebugger(
-             code: "fakeCode 2",
-             content: "test------2",
-             color: Color.cyan,
-             //tagCode: "testtag"
-             tagObjectReference : gameObject
-         );
-
-
-
-
-
-
+            // EditTerminal.AddCommand("printTags", PrintTags);
 
         }
+
+
+
+
+
+        KarianakisTag CreateTag(string tagCode
+          , GameObject gameObjectReference)
+        {
+            if (tagCode == "" &&
+                gameObjectReference == null)
+            {
+                return _defaultTag;
+            }
+            else
+            {
+                var newTag = new KarianakisTag
+                    (tagCode, gameObjectReference);
+
+                _tags.Add(newTag);
+                _tagsChanged?.Invoke();
+
+                return newTag;
+
+            }
+        }
+
+        bool TryFindTag(string tagCode, GameObject tagObjectReference,
+        out KarianakisTag tagFound)
+        {
+
+            tagFound = null;
+            foreach (var item in _inst._tags)
+            {
+                if (item.IsThisYourGameobjectReference(tagObjectReference))
+                {
+                    tagFound = item;
+                    break;
+                }
+
+                if (item.GetTag == tagCode)
+                {
+                    tagFound = item;
+                    break;
+                }
+
+            }
+
+            return tagFound != null;
+        }
+
+
+
+
+        //? EXPOSED FUNCTIONS
+
+        static internal KarianakisTag GetDefaultTag
+            => _inst._defaultTag;
+
+        static internal bool EqualsToDefaultTag(KarianakisTag tag)
+        {
+            if (tag == null) return false;
+            else return tag == _inst._defaultTag;
+        }
+
+        static internal KarianakisTag GetOrCreateTag(string tagCode, GameObject gameObjectReference)
+        {
+            bool tagFound = _inst.TryFindTag(tagCode, gameObjectReference
+            , out KarianakisTag tag);
+
+            if (tagFound == true)
+                return tag;
+            else
+                return _inst.CreateTag(tagCode, gameObjectReference);
+
+        }
+        // for commands that dont want to create a tag if mistaken
+        // 
+        internal static bool CheckTagExists(string tagCode
+          , GameObject tagObjectReference)
+              => _inst.TryFindTag(tagCode, tagObjectReference, out var tag);
+
+
+        internal static void SubscribeToTagsChanged(Action action)
+            => _inst._tagsChanged += action;
+        internal static void UnSubscribeToTagsChanged(Action action)
+            => _inst._tagsChanged -= action;
+
+
+        // TRIGGERS CHANGE
+        internal static void SetTagEnabledStatus(string tagCode, GameObject tagObjectReference, bool status)
+        {
+            _inst.TryFindTag(tagCode, tagObjectReference, out var tag);
+            if (tag == null) return;
+
+            bool statusBefore = tag.GetEnabled;
+            tag.SetEnabled(status);
+
+            //todo the debug through the terminal debug not unitys 
+            // maybe extra simple log in unity
+            // maybe option for that 
+
+            Debug.LogError($"TAG :{tag.GetTag} == {statusBefore} -> {status}");
+
+            _inst._tagsChanged?.Invoke();
+        }
+
+
+
+        //? WHY ??
+        // internal static bool GetTagEnabledStatus(string tagCode
+        //     , GameObject tagObjectReference)
+        // {
+        //     var tag = _inst.TryFindTag(tagCode, tagObjectReference);
+        //     if (tag != null) return tag.GetEnabled;
+        //     return false;
+        // }
+
+
+
+        //? WHY 
+        // internal static void GetTagCode(out string code
+        //     , out bool found, GameObject gameObjectReference)
+        // {
+        //     code = "";
+        //     found = false;
+
+        //     var tag = _inst.GetTag();
+        //     if (tag == null) return;
+        //     {
+        //         code = tag._tag;
+        //         found = true;
+        //     }
+
+        // }
+
+
+
+
+
+
+
+
+
+
+
+        void PrintTags()
+        {
+
+            Debug.Log($"PRINT TAG COUNT [{_tags.Count}]");
+
+            foreach (var item in _tags)
+            {
+                bool objectPresent = item.GetGameobjectReference != null;
+              
+                string content = $"Tag-({item.GetTag}) Enabled-({item.GetEnabled}) ";
+
+                if(objectPresent)
+                {
+                    content += $" Has GameObject-({objectPresent})";
+                }
+              
+                Debug.Log(content);
+            }
+        }
+
+
+        //? WHAT ARE YOU ???
 
 
 
@@ -81,170 +244,34 @@ namespace Karianakis.EditTools
         {
             if (variables == null)
             {
-                Debug.LogError("NEED tagcode and status px fakename false");
+                Debug.LogError("NEED tagcode and status example : fakename false");
                 return;
             }
             if (variables.Length != 2)
             {
-                Debug.LogError("PARAMETERS MUST BE 2: tagcode and status px fakename false");
+                Debug.LogError("PARAMETERS MUST BE 2: tagcode and status example : fakename false");
                 return;
             }
 
-            bool tagExisst = CheckTagExists(variables[0]);
-            if (tagExisst == false)
+            bool tagExists = TryFindTag(variables[0], null, out var tag);
+            if (tagExists == false)
             {
                 Debug.LogError($"tag ({variables[0]}) doesnt exist");
                 return;
             }
 
-            bool status = false;
-            if (variables[1] == "true") status = true;
-            else if (variables[1] == "false") status = false;
-            else return;
+
+            if (bool.TryParse(variables[1], out bool status) == false)
+            {
+                Debug.LogError($"status parameter ({variables[1]}) is not a valid boolean (true/false)");
+                return;
+            }
 
             SetTagEnabledStatus(tagCode: variables[0], null, status);
 
         }
 
 
-        #region  FOR OUTSIDERS
-
-        public static void SubscribeToTagsChanged(Action action)
-        => _inst._tagsChanged += action; public static void UnSubscribeToTagsChanged(Action action)
-        => _inst._tagsChanged -= action;
-
-        public static bool GetTagEnabled(string tagCode = "", GameObject tagObjectReference = null)
-        {
-            var tag = _inst.GetTag(tagCode, tagObjectReference);
-            if (tag != null) return tag.enabled;
-            return false;
-
-        }
-
-
-
-
-        public static bool CheckTagExists(string tagCode = "", GameObject tagObjectReference = null)
-        => _inst.GetTag(tagCode, tagObjectReference) != null;
-
-
-
-
-
-        public static KarianakisTag GetOrCreateTag(string tagCode, GameObject tagObjectReference = null)
-        {
-            var tag = _inst.GetTag(tagCode, tagObjectReference); if (tag != null) return tag; CreateTag(tagCode, tagObjectReference); return _inst.GetTag(tagCode, tagObjectReference);
-        }
-
-
-        //! TRIGGERS CHANGE
-        public static void CreateTag(string tagCode, GameObject gameObjectReference = null)
-        {
-            if (tagCode == "" && gameObjectReference == null)
-                return;
-
-            if (_inst.GetTag(tagCode, gameObjectReference) != null)
-                return;
-
-            var newTag = new KarianakisTag(tagCode, gameObjectReference);
-            _inst._tags.Add(newTag);
-
-            _inst._tagsChanged?.Invoke();
-        }
-
-        public static void GetTagCode(out string code, out bool found, GameObject gameObjectReference)
-        {
-            code = "";
-            found = false;
-
-            var tag = _inst.GetTag();
-            if (tag == null) return;
-            {
-                code = tag._tag;
-                found = true;
-            }
-
-        }
-
-        //! TRIGGERS CHANGE
-        public static void SetTagEnabledStatus(string tagCode, GameObject tagObjectReference, bool status)
-        {
-            var tag = _inst.GetTag(tagCode, tagObjectReference);
-            if (tag == null) return;
-
-            bool statusBefore = tag.enabled;
-            tag._enabled = status;
-            Debug.LogError($"TAG :{tag._tag} == {statusBefore} -> {status}");
-
-            _inst._tagsChanged?.Invoke();
-        }
-
-
-
-        #endregion
-
-
-
-
-
-
-
-        KarianakisTag GetTag(string tagCode = "", GameObject tagObjectReference = null)
-        {
-            foreach (var item in _inst._tags)
-            {
-                if (item._tag == tagCode)
-                    return item;
-
-                if (item._gameobjectReference == tagObjectReference
-                && tagObjectReference != null)
-                    return item;
-
-            }
-            return null;
-        }
-
-
-        [SerializeField]
-        List<KarianakisTag> _tags = new();
-
-        void PrintTags()
-        {
-
-            foreach (var item in _tags)
-            {
-                string objectName = "NULL OBJ";
-                if (item._gameobjectReference != null)
-                    objectName = item._gameobjectReference.name;
-
-                Debug.Log($"tag: {item._tag} enabled: {item.enabled} gameObjectRef: {objectName}");
-            }
-        }
-
-
-
-
-        [Serializable]
-        public class KarianakisTag
-        {
-
-            public bool enabled => _enabled;
-            [SerializeField]
-            internal bool _enabled = true;
-
-
-            public string _tag;
-            public GameObject _gameobjectReference;
-            public KarianakisTag(string tag, GameObject gameObjectReference = null)
-            {
-                _tag = tag;
-                _gameobjectReference = gameObjectReference;
-            }
-
-
-            ~KarianakisTag() { }
-
-        }
 
 
     }

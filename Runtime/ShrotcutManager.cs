@@ -8,10 +8,8 @@ using UnityEngine;
 namespace Karianakis.EditTools
 {
 
-    public class ShortcutManager : MonoBehaviour
+    internal class ShortcutManager : MonoBehaviour
     {
-
-
 
 
 
@@ -23,10 +21,12 @@ namespace Karianakis.EditTools
             {
                 if (_instForbidden == null)
                 {
-                    var obj = new GameObject("ShortcutManager");
+                    // var obj = new GameObject("ShortcutManager");
 
-                    _instForbidden = obj.AddComponent<ShortcutManager>();
-                    obj.transform.SetParent(EditSuitFather._inst.transform, true);
+                    // _instForbidden = obj.AddComponent<ShortcutManager>();
+                    // obj.transform.SetParent(EditSuitFather.GetCanvas(), false);
+
+                    _instForbidden = EditSuitFather.GetCanvas().gameObject.AddComponent<ShortcutManager>();
                 }
 
                 return _instForbidden;
@@ -35,15 +35,21 @@ namespace Karianakis.EditTools
             set { _instForbidden = value; }
 
 
-
         }
+
+
+        HashSet<KeyCode> _CurrentPressedKeys = new();
+        HashSet<KeyCode> _CurrentPressedDownKeys = new();
+        List<ShortcutAction> _shortcutList = new();
+        [SerializeField] string[] _shortcutDebugArray;
 
 
 
         void Update()
         {
-            CurrentPressedKeys.Clear();
-            CurrentPressedDownKeys.Clear();
+
+            _CurrentPressedKeys.Clear();
+            _CurrentPressedDownKeys.Clear();
 
             //if (Input.anyKey is false) return;
             if (GetAnyKey() is false) return;
@@ -51,16 +57,12 @@ namespace Karianakis.EditTools
 
             foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
-                //if (Input.GetKey(key))
-                GetKey(key);
-                {
-                    CurrentPressedKeys.Add(key);
 
-                    //if (Input.GetKeyDown(key))
-                    if (GetKeyDown(key))
-                        CurrentPressedDownKeys.Add(key);
+                if (GetKey(key))
+                    _CurrentPressedKeys.Add(key);
 
-                }
+                if (GetKeyDown(key))
+                    _CurrentPressedDownKeys.Add(key);
             }
 
             foreach (var item in _shortcutList)
@@ -72,13 +74,9 @@ namespace Karianakis.EditTools
 
         }
 
-        HashSet<KeyCode> CurrentPressedKeys = new HashSet<KeyCode>();
-        HashSet<KeyCode> CurrentPressedDownKeys = new HashSet<KeyCode>();
 
-        List<ShortcutAction> _shortcutList = new();
 
-        [SerializeField] string[] _shortcutDebugArray;
-        void DebbugShortcuts()
+        void DebugShortcuts()
         {
 
             _shortcutDebugArray = new string[_shortcutList.Count];
@@ -93,8 +91,6 @@ namespace Karianakis.EditTools
                 }
             }
         }
-
-
 
         public static void AddShortcut(ShortcutAction shortcut)
         {
@@ -111,7 +107,7 @@ namespace Karianakis.EditTools
             }
 
             _inst._shortcutList.Add(shortcut);
-            _inst.DebbugShortcuts();
+            _inst.DebugShortcuts();
 
         }
         void ProcessShortcut(ShortcutAction shortcut)
@@ -128,13 +124,13 @@ namespace Karianakis.EditTools
 
             foreach (var item in shortcut._keys)
             {
-                if (CurrentPressedKeys.Contains(item) is false)
+                if (_CurrentPressedKeys.Contains(item) is false)
                     allKeys = false;
 
-                if (CurrentPressedDownKeys.Contains(item)) anyKeyDown = true;
+                if (_CurrentPressedDownKeys.Contains(item)) anyKeyDown = true;
             }
 
-            bool lastKeyDown = CurrentPressedDownKeys.Contains(shortcut._keys[shortcut._keys.Length - 1]);
+            bool lastKeyDown = _CurrentPressedDownKeys.Contains(shortcut._keys[shortcut._keys.Length - 1]);
 
 
 
