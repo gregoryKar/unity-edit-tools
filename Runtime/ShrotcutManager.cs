@@ -33,16 +33,27 @@ namespace Karianakis.EditTools
 
         void Start()
         {
-            ShortcutAction.Create("test 01", () =>
+            ShortcutAction.Create("---- space t", () =>
             {
-              
+                Debug.LogError("---- space t");
             }, KeyCode.Space, KeyCode.T);
+
+            ShortcutAction.Create("---- a", () =>
+         {
+             Debug.LogError("---- a");
+         }, KeyCode.A);
+
+            ShortcutAction.Create("---- <", () =>
+       {
+           Debug.LogError("---- <");
+       }, KeyCode.LeftArrow);
         }
 
         void Update()
         {
 
-            if (InputManager.GetAnyKey() == false) return;
+            if (InputManager.GetAnyKeyAnyState() == false) return;
+
 
             foreach (var item in _shortcutList)
             {
@@ -69,25 +80,36 @@ namespace Karianakis.EditTools
         }
         void ProcessShortcut(ShortcutAction shortcut)
         {
+            int keysCount = shortcut._keys.Length;
+           if( InputManager.GetKeyDown
+            (shortcut._keys[keysCount - 1]) == false)
+           return;
 
-            bool allKeys = true;
 
-
-
-            foreach (var item in shortcut._keys)
+            if (keysCount == 1) 
             {
-                if (InputManager.GetKey(item) == false)
-                    allKeys = false;
+                // last down is enough 
+             shortcut._action.Invoke();
+            }
+            else
+            {
+                // last down asumed
+                // checks all but the last if being held down
+                for(int i = 0 ; i < keysCount -1 ; i ++)
+                {
+                    if (InputManager.GetKey(shortcut._keys[i]) == false)
+                        return;
+                }
+             shortcut._action.Invoke();
             }
 
-            bool lastKeyDown = InputManager.GetKeyDown(shortcut._keys[shortcut._keys.Length - 1]);
+         
 
 
-            if (allKeys is false) return;
-            if (lastKeyDown is false) return;
 
 
-            shortcut._action.Invoke();
+
+
 
         }
 

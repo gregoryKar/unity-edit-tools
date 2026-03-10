@@ -10,6 +10,8 @@ namespace Karianakis.EditTools
     class EditToolsTestScript : MonoBehaviour
     {
 
+        //! AIMED FOR MY PERSONAL TESTING AND NOTHING ELSE
+
         void Start()
         {
             ShortcutAction.Create("simple shortcut with space and A", () => Debug.Log("SPACE A SIMPLE"), KeyCode.Space, KeyCode.A);
@@ -28,6 +30,46 @@ namespace Karianakis.EditTools
 
         }
 
+        void Update()
+        {
+
+            // void testKeyCode(KeyCode key)
+            // {
+            //     if (InputManager.GetKey(key))
+            //     {
+            //         Debug.LogWarning($"Key {key} pressed");
+            //     }
+            // }
+
+            // void testKeyCodeDown(KeyCode key)
+            // {
+            //     if (InputManager.GetKeyDown(key))
+            //     {
+            //         Debug.LogError($"Key {key} pressed");
+            //     }
+
+            // }
+
+
+
+            // testKeyCode(KeyCode.Backslash);
+            // testKeyCode(KeyCode.Backspace);
+
+            // testKeyCodeDown(KeyCode.Backslash);
+            // testKeyCodeDown(KeyCode.Backspace);
+
+            //   testKeyCode(KeyCode.KeypadEnter);
+            // testKeyCode(KeyCode.Return);
+
+            // testKeyCodeDown(KeyCode.KeypadEnter);
+            // testKeyCodeDown(KeyCode.Return);
+
+
+
+
+
+        }
     }
 
 }
+

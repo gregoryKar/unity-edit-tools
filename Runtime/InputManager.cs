@@ -50,7 +50,7 @@ namespace Karianakis.EditTools
             _PressedChars.Clear();
             _PressedDownChars.Clear();
 
-        
+
 
 #if ENABLE_LEGACY_INPUT_MANAGER
             UpdateKeysPressedLegacySystem();
@@ -67,35 +67,36 @@ namespace Karianakis.EditTools
         void UpdateKeysPressedNewInputSystem()
         {
 #if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
-   if (UnityEngine.InputSystem.Keyboard.current != null)
+   if (UnityEngine.InputSystem.Keyboard.current == null)return;
+            
+            bool shiftPressed = Input.GetKey(KeyCode.LeftShift) || InputGetKey(KeyCode.RightShift);
+            
+            foreach (var key in UnityEngine.InputSystem.Keyboard.currentallKeys)
             {
-                foreach (var key in UnityEngine.InputSystem.Keyboard.current.allKeys)
+
+                if (key.wasPressedThisFrame)
                 {
-                    // key.isPressed
-                    if(key.isPressed)
+                    _PressedDownKeys.Add(key);
+                    char c = TextUtilities.KeyCodeToChar(key, shiftPressed);
+                    //is checking whether the character c is not the nullcharacter (character code 0).
+                    if (c != '\0')
                     {
-                        char c = TextUtilities.KeyCodeToChar(key, Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
-                           if (c != '\0')
-                           {
-                            _PressedChars.Add(c);
-                            _PressedKeys.Add(key);
-                           }
-
-                   
-                    }
-
-                    if (key.wasPressedThisFrame)
-                    {
-                        char c = TextUtilities.KeyCodeToChar(key, Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
-
-                        //is checking whether the character c is not the null character (character code 0).
-                           if (c != '\0')
-                           {
-                         _PressedDownChars.Add(c);
-                        _PressedDownKeys.Add(key);
-                           }
+                    _PressedDownChars.Add(c);
                     }
                 }
+                // key.isPressed
+                else if(key.isPressed)
+                {
+                    _PressedKeys.Add(key);
+                    char c = TextUtilities.KeyCodeToChar(key, shiftPressed);
+                    if (c != '\0')
+                    {
+                     _PressedChars.Add(c);
+                    
+                    }
+                }
+                
+                
             }
 
 
@@ -106,22 +107,38 @@ namespace Karianakis.EditTools
         {
 #if ENABLE_LEGACY_INPUT_MANAGER
 
-            foreach (char c in Input.inputString)
-            {
-                _PressedDownChars.Add(c);
-                _PressedDownKeys.Add((KeyCode)c);
-            }
+            // for keys that don't have a char representation, we can only detect them via KeyCode
+            // foreach (char c in Input.inputString)
+            // {
+            //     _PressedDownChars.Add(c);
+            //     _PressedDownKeys.Add((KeyCode)c);
+            // }
+
+            bool shiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
-                if (Input.GetKey(key)) // held down
+
+                if (Input.GetKeyDown(key))
                 {
-                    char c = TextUtilities.KeyCodeToChar(key, Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
+                    _PressedDownKeys.Add(key);
+                    char c = TextUtilities.KeyCodeToChar(key, shiftPressed);
+                    // You need to implement this mapping
+                    if (c != '\0')
+                    {
+                        _PressedDownChars.Add(c);
+                    }
+
+                }
+                else if (Input.GetKey(key)) // held down
+                {
+
+                    _PressedKeys.Add(key);
+                    char c = TextUtilities.KeyCodeToChar(key, shiftPressed);
                     // You need to implement this mapping
                     if (c != '\0')
                     {
                         _PressedChars.Add(c);
-                        _PressedKeys.Add(key);
                     }
                 }
             }
@@ -138,14 +155,15 @@ namespace Karianakis.EditTools
 
         //? EXPOSED
         public static bool GetKey(KeyCode key)
-            =>_inst._PressedKeys.Contains(key);
-    
-        
+            => _inst._PressedKeys.Contains(key);
+
+
         public static bool GetKeyDown(KeyCode key)
             => _inst._PressedDownKeys.Contains(key);
-        public static bool GetAnyKey()
-            => _inst._PressedKeys.Count > 0;
-    
+        public static bool GetAnyKeyAnyState()
+            => _inst._PressedKeys.Count > 0 ||
+            _inst._PressedDownKeys.Count > 0;
+
 
 
 

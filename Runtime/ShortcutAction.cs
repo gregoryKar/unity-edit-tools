@@ -20,7 +20,7 @@ namespace Karianakis.EditTools
 
 
         public static void Create(string command, Action action, params KeyCode[] keys)
-        => new ShortcutAction(command, action ,keys);//, false
+        => new ShortcutAction(command, action, keys);//, false
 
 
         // public static void CreateOptional(string command, Action action, params KeyCode[] keys)
@@ -34,6 +34,11 @@ namespace Karianakis.EditTools
         private ShortcutAction(string command, Action action, params KeyCode[] keys)// bool anyKeyIsEnough
         {
 
+            if (keys == null || keys.Length == 0)
+            {
+                Debug.LogError("shortcut " + command + " has no keys assigned");
+                return;
+            }
 
             bool notPlayMode =
                 Application.isEditor && !Application.isPlaying;

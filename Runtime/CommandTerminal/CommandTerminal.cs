@@ -131,8 +131,8 @@ namespace Karianakis.EditTools
         void ConfigureStuff(GameObject obj)
         {
 
-           _references =
-                obj.GetComponent<CommandTerminalReferences>();
+            _references =
+                 obj.GetComponent<CommandTerminalReferences>();
 
             _terminalLogs = new TerminalLogs
                 (_references.GetLogsAboveText);
@@ -168,7 +168,6 @@ namespace Karianakis.EditTools
 
             ShortcutAction.Create("EditConsoleToggle", () => ReverseVisibility(), _toggleKeys);
 
-            ShortcutAction.Create("EditTerminal : execute", () => Execute(), KeyCode.KeypadEnter, KeyCode.Return);
 
 
             ShortcutAction.Create("EditTerminal : NextSuggestion Tab", () => SelectNextSuggestion(1), KeyCode.Tab);
@@ -207,33 +206,33 @@ namespace Karianakis.EditTools
 
             if (GetVisibilityStatus is false) return;
 
+            if (InputManager.GetAnyKeyAnyState() == false) return;
+
+
+
+            if (InputManager.GetKeyDown(KeyCode.KeypadEnter)
+            || InputManager.GetKeyDown(KeyCode.Return))
+            {
+                Execute();
+                return;
+            }
+            if (InputManager.GetKey(KeyCode.Backspace))
+            {
+                if (rawInput.Length < 1) return;
+                if (InputManager.GetKey(KeyCode.Space))
+                    rawInput = "";
+                else
+                    rawInput = rawInput.Substring(0, rawInput.Length - 1);
+
+                return;
+            }
+
             if (InputManager.GetCharsPressedNow
-                (out char[] chars) == false) return;
-
-
+                          (out char[] chars) == false) return;
 
             foreach (char c in chars)
             {
-                if (c == '\b') // backspace
-                {
-                    if (rawInput.Length < 1) break;
-
-                    if (InputManager.GetKey(KeyCode.Space))
-                        rawInput = "";
-                    else
-                        rawInput = rawInput.Substring(0, rawInput.Length - 1);
-
-                    break;
-                }
-                else if (c == '\n' || c == '\r') // enter/return
-                {
-                    Execute();
-
-                    break;
-
-                }
-                else rawInput += c;
-
+                rawInput += c;
             }
 
         }
