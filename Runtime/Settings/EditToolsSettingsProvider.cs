@@ -22,6 +22,8 @@ namespace Karianakis.EditTools
         }
         const string _path = "ProjectEditTools";
         const string _label = "myLabel";
+        const string _showcasePath = "EDIT TOOLS SHOWCASE";
+
         [SettingsProvider]
         public static SettingsProvider CreateProvider()
         {
@@ -97,7 +99,7 @@ namespace Karianakis.EditTools
                     EditorGUILayout.Space();
 
                     //! both restore works
-                    if (GUILayout.Button("Restore Defaults 0"))
+                    if (GUILayout.Button("Restore Defaults"))
                     {
 
                         if (EditorUtility.DisplayDialog(
@@ -113,6 +115,15 @@ namespace Karianakis.EditTools
                             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
 
                         }
+
+                    }
+                    if (GUILayout.Button("Spawn Showcase Gameobject"))
+                    {
+                        EditorUtility.DisplayDialog("Hi", "i will spawn a gameObject "
+                       + "go check out monobehaviour attached", "ok", "sure");
+
+                        var obj = GameObject.Instantiate(Resources.Load<GameObject>(_showcasePath));
+                        obj.name = "EDIT TOOLS SHOWCASE";
 
                     }
 

@@ -14,24 +14,24 @@ namespace Karianakis.EditTools
         public string _commandStringId;
         public KeyCode[] _keys;
         public Action _action;
-        public bool _anyKeyIsEnough;
+        //public bool _anyKeyIsEnough;
 
 
 
 
         public static void Create(string command, Action action, params KeyCode[] keys)
-        => new ShortcutAction(command, action, false, keys);
+        => new ShortcutAction(command, action ,keys);//, false
 
 
-        public static void CreateOptional(string command, Action action, params KeyCode[] keys)
-        => new ShortcutAction(command, action, true, keys);
-
-
-
+        // public static void CreateOptional(string command, Action action, params KeyCode[] keys)
+        // => new ShortcutAction(command, action, keys);//, true
 
 
 
-        private ShortcutAction(string command, Action action, bool anyKeyIsEnough, params KeyCode[] keys)
+
+
+
+        private ShortcutAction(string command, Action action, params KeyCode[] keys)// bool anyKeyIsEnough
         {
 
 
@@ -56,7 +56,7 @@ namespace Karianakis.EditTools
             this._commandStringId = command;
             this._keys = keys;
             this._action = action;
-            this._anyKeyIsEnough = anyKeyIsEnough;
+            //this._anyKeyIsEnough = anyKeyIsEnough;
 
             ShortcutManager.AddShortcut(this);
         }

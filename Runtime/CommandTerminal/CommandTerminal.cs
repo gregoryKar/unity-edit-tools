@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace Karianakis.EditTools
 {
-    public class CommandTerminal : MonoBehaviour
+    internal class CommandTerminal : MonoBehaviour
     {
         static CommandTerminal _instForbidden;
         static CommandTerminal _inst
@@ -38,23 +38,20 @@ namespace Karianakis.EditTools
 
         //? PARAMS
         const string _preffabCode = "EditTerminalLayout";
-
-
+        const string _visibilityKey = "CommandTerminalVisibility";
 
         const int _maxSuggestionLines = 5;
         const float _sizeIncreaseAmount = 0.2f;
 
-        const string _visibilityKey = "CommandTerminalVisibility";
 
         KeyCode[] _toggleKeys = new KeyCode[] { KeyCode.Space, KeyCode.Q };
 
         RectTransform _containerRect;
         GameObject _kidContainerObj;
-        TMPro.TextMeshProUGUI _inputDisplayText;
-        TMPro.TextMeshProUGUI _suggestionsText;
-        TMPro.TextMeshProUGUI _logsAboveText;
-        TMPro.TextMeshProUGUI _paramsShowcaseText;
-        List<string> _logs = new List<string>();
+        CommandTerminalReferences _references;
+        TerminalLogs _terminalLogs;
+
+
         timeStamp _lastExecuteTime;
 
         string _rawInputForbidden;
@@ -72,8 +69,6 @@ namespace Karianakis.EditTools
 
                 RefreshTextGraphicsForbidden();
                 RefreshSuggestions();
-                RefreshLogs();
-
             }
         }
         string[] _inputWords;
@@ -89,9 +84,7 @@ namespace Karianakis.EditTools
 
         Dictionary<Type, Color> _typeColors = new Dictionary<Type, Color>();
 
-
         int _suggestionIndex = -1;
-        int _logBrowsingIndex = -1;
         List<string> _suggestionList = new List<string>();
         List<CommandBuilderUniversal> _commands = new();
         float _referenceDeltaSizeX;
@@ -138,25 +131,21 @@ namespace Karianakis.EditTools
         void ConfigureStuff(GameObject obj)
         {
 
-
-
-            CommandTerminalReferences references =
+           _references =
                 obj.GetComponent<CommandTerminalReferences>();
 
+            _terminalLogs = new TerminalLogs
+                (_references.GetLogsAboveText);
+            _terminalLogs.AddLogLine("logs initiated", "--", color: Color.cyan);
 
-            _inputDisplayText = references.GetInputDisplayText;
-            _suggestionsText = references.GetSuggestionsText;
-            _logsAboveText = references.GetLogsAboveText;
-            _paramsShowcaseText = references.GetParamsShowcaseText;
+            _references.GetToggleShortcutText.text = $"Toggle : {string.Join(" + ", _toggleKeys.Select(k => k.ToString()))}";
 
-            references.GetToggleShortcutText.text = $"Toggle : {string.Join(" + ", _toggleKeys.Select(k => k.ToString()))}";
-
-            references.GetSettingsButton.GetComponent<Button>().onClick
+            _references.GetSettingsButton.GetComponent<Button>().onClick
                .AddListener(() => EditToolsSettingsProvider.OpenSettingsPanel());
 
-            references.GetSizeIncreaseButton.GetComponent<Button>().onClick
+            _references.GetSizeIncreaseButton.GetComponent<Button>().onClick
                     .AddListener(() => ChangeTransformSize(_sizeIncreaseAmount));
-            references.GetSizeDecreaseButton.GetComponent<Button>().onClick
+            _references.GetSizeDecreaseButton.GetComponent<Button>().onClick
                     .AddListener(() => ChangeTransformSize(-_sizeIncreaseAmount));
 
 
@@ -179,7 +168,7 @@ namespace Karianakis.EditTools
 
             ShortcutAction.Create("EditConsoleToggle", () => ReverseVisibility(), _toggleKeys);
 
-            ShortcutAction.CreateOptional("EditTerminal : execute", () => Execute(), KeyCode.KeypadEnter, KeyCode.Return);
+            ShortcutAction.Create("EditTerminal : execute", () => Execute(), KeyCode.KeypadEnter, KeyCode.Return);
 
 
             ShortcutAction.Create("EditTerminal : NextSuggestion Tab", () => SelectNextSuggestion(1), KeyCode.Tab);
@@ -189,25 +178,25 @@ namespace Karianakis.EditTools
             ShortcutAction.Create("EditTerminal : PreviousSuggestion", () => SelectNextSuggestion(-1), KeyCode.UpArrow);
 
             ShortcutAction.Create("EditTerminal : previousCommand", () =>
-            SelectNextFromLogs(-1), KeyCode.LeftArrow);
+            rawInput = _terminalLogs.GetNextFromLogs(-1), KeyCode.LeftArrow);
 
-            ShortcutAction.Create("EditTerminal : nextCommand", () => SelectNextFromLogs(1), KeyCode.RightArrow);
+            ShortcutAction.Create("EditTerminal : nextCommand", () => rawInput = _terminalLogs.GetNextFromLogs(1), KeyCode.RightArrow);
 
             StartSetVissibility();
 
-            CommandBuilderUniversal.Create("clc", ClearLogs);
-            CommandBuilderUniversal.Create("clear", ClearLogs);
+            CommandBuilderUniversal.Create("clc", _terminalLogs.ClearLogs);
+            CommandBuilderUniversal.Create("clear", _terminalLogs.ClearLogs);
             CommandBuilderUniversal.Create("printAll", PrintAllCommands);
 
 
 
-            CommandBuilderUniversal.Create("fromDelegate"
-            , (Action<int, string>)((a, b) => { Debug.Log($"{a} {b}"); }));
+            // CommandBuilderUniversal.Create("fromDelegate"
+            // , (Action<int, string>)((a, b) => { Debug.Log($"{a} {b}"); }));
 
-            CommandBuilderUniversal.Create("labda"
-                   , () => { Debug.Log($"--"); });
-            CommandBuilderUniversal.Create("labdaTwoParams"
-                   , (int a, int b) => { Debug.Log($"{a} {b}"); });
+            // CommandBuilderUniversal.Create("labda"
+            //        , () => { Debug.Log($"--"); });
+            // CommandBuilderUniversal.Create("labdaTwoParams"
+            //        , (int a, int b) => { Debug.Log($"{a} {b}"); });
 
             rawInput = "";// to refresh the suggestions and logs and all that stuff and make sure everything is ok at the start
 
@@ -320,40 +309,18 @@ namespace Karianakis.EditTools
             return false;
         }
 
-        void AddLogLine(string line, string prefix)
-        {
-            _logs.Add(prefix + line);
-            if (_logs.Count > EditToolsSettings.GetTerminalMaxLogs)
-                _logs.RemoveAt(0);
 
-            RefreshLogs();
-        }
-        void RefreshLogs()
-        {
-            var array = _logs.ToArray();
-
-            if (_logBrowsingIndex > -1 && _logBrowsingIndex < array.Length)
-                array[_logBrowsingIndex] = TextUtilities.WrapWordWithColor(array[_logBrowsingIndex], Color.yellow);
-
-            // for (int i = 0; i < array.Length; i++)
-            // {
-            //     array[i] = array[i];
-            // }
-
-            _logsAboveText.text = string.Join("\n", array);
-
-        }
-        void ClearLogs()
-            => _logs.Clear();
         void PrintAllCommands()
         {
             string allCodes = string.Join(", ", _commands.Select(c => c.GetCode));
             Debug.Log($"ALL {_commands.Count} COMMANDS : " + allCodes);
-            foreach (var cmd in _commands)
-            {
-                AddLogLine(cmd.GetCode, "-. ");
 
+
+            for (int i = 0; i < _commands.Count; i++)
+            {
+                _terminalLogs.AddLogLine(_commands[i].GetCode, $"{i}-");
             }
+
         }
 
 
@@ -361,7 +328,7 @@ namespace Karianakis.EditTools
         {
             if (rawInput.Length < 1)
             {
-                _inputDisplayText.text = _emptyInputDisplay;
+                _references.GetInputDisplayText.text = _emptyInputDisplay;
                 DisplayFunctionParams();
                 return;
             }
@@ -372,11 +339,11 @@ namespace Karianakis.EditTools
 
             if (outputWords.Length <= 1)
             {
-                _inputDisplayText.text = outputWords[0];
+                _references.GetInputDisplayText.text = outputWords[0];
             }
             else
             {
-                _inputDisplayText.text = string
+                _references.GetInputDisplayText.text = string
                     .Join(_seperatorDisplayChar, outputWords.ToArray());
             }
 
@@ -394,13 +361,13 @@ namespace Karianakis.EditTools
             }
             else
             {
-                _paramsShowcaseText.text = "---";
+                _references.GetParamsShowcaseText.text = "---";
                 return;
             }
 
             if (paramTypes == null || paramTypes.Length < 1)
             {
-                _paramsShowcaseText.text = "---";
+                _references.GetParamsShowcaseText.text = "---";
                 return;
             }
             else
@@ -420,7 +387,7 @@ namespace Karianakis.EditTools
 
                 }
 
-                _paramsShowcaseText.text = string.Join(" ", showcaseArray);
+                _references.GetParamsShowcaseText.text = string.Join(" ", showcaseArray);
             }
 
 
@@ -533,19 +500,23 @@ namespace Karianakis.EditTools
             var command = _commands.FirstOrDefault(c => c.GetCode == code);
             if (command == null)
             {
-                AddLogLine($"Command not found: <color=red>{code}</color>"
-                , "!! = ");
+                _terminalLogs.AddLogLine($"Command not found: <color=red>{code}</color>", "!= ", color: Color.magenta);
                 return;
             }
 
 
             //.TryExecuteStrings(variables);
             bool executedFine = command.TryExecuteStrings(variables);
+
             if (executedFine == false)
             {
-                AddLogLine("<color=red>problematic execution</color>", "> ");
+                _terminalLogs.AddLogLine(code, "X ", color: Color.red);
             }
-            AddLogLine(code, "> ");
+            else
+            {
+                _terminalLogs.AddLogLine(code, "> ");
+            }
+
 
         }
 
@@ -592,7 +563,7 @@ namespace Karianakis.EditTools
 
 
             //_suggestionsText.text = "- \n ";
-            _suggestionsText.text = string.Join("\n", displayArray);
+            _references.GetSuggestionsText.text = string.Join("\n", displayArray);
 
         }
 
@@ -615,30 +586,7 @@ namespace Karianakis.EditTools
             DisplaySuggestions();
         }
 
-        void SelectNextFromLogs(int direction)
-        {
-            if (_logs.Count <= 0) return;
 
-            _logBrowsingIndex += direction;
-
-            if (_logBrowsingIndex
-            >= _logs.Count)
-            {
-                _logBrowsingIndex = 0;
-            }
-            else if (_logBrowsingIndex < 0)
-            {
-                _logBrowsingIndex = _logs.Count - 1;
-            }
-
-            string log = _logs[_logBrowsingIndex];
-            if (log.Length > 2)
-            {
-                log = log.Substring(2, log.Length - 2);
-            }
-            rawInput = log;
-            RefreshLogs();
-        }
 
         List<string> GetClosestCommands(string input, int maxAmount)
         {
@@ -736,6 +684,8 @@ namespace Karianakis.EditTools
         {
             _inst._commands.Add(command);
         }
+
+
 
 
 

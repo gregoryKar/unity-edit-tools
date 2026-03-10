@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public static class StyledHierarchy
+static class StyledHierarchy
 {
 
     static Texture2D _defaultIcon;
@@ -26,10 +26,6 @@ public static class StyledHierarchy
 
 
 
-        bool iconPresent = item._customIcon != null && item._skipIcon == false;
-
-
-
         const float iconWidth = 16f;
         //const float iconSpaceAfter = 4f;
         const float textStartSpace = 2f;
@@ -39,16 +35,16 @@ public static class StyledHierarchy
             //float iconOffset = iconPresent ? (iconWidth + iconSpaceAfter) : 0f;
             Rect backroundRect = new Rect(selectionRect.x + iconWidth, selectionRect.y, selectionRect.width - iconWidth, selectionRect.height);
 
-            EditorGUI.DrawRect(backroundRect, item._backgroundColor);
+            EditorGUI.DrawRect(backroundRect, item.GetBackgroundColor);
         }
 
         // draw icon background
-        if (iconPresent)
+        if (item.HasCustomIcon)
         {
             // Draw background for icon
             Rect itemBackRect = new Rect(selectionRect.x, selectionRect.y,
                 iconWidth, selectionRect.height);
-            Color iconBgColor = item._customIconBackroundColor ? item._itemBackgroundColor : item._backgroundColor;
+            Color iconBgColor = item.GetEnableCustomIconBackroundColor ? item.GetItemBackgroundColor : item.GetBackgroundColor;
             EditorGUI.DrawRect(itemBackRect, iconBgColor);
 
             // Draw background for space after icon
@@ -65,7 +61,8 @@ public static class StyledHierarchy
             Rect iconRect = new Rect(selectionRect.x, selectionRect.y,
                 iconWidth, iconWidth);
 
-            Texture2D iconToUse = iconPresent ? item._customIcon : _defaultIcon;
+            Texture2D iconToUse = item.GetCustomIcon;
+            if (iconToUse == null) iconToUse = _defaultIcon;
             GUI.DrawTexture(iconRect, iconToUse);
 
         }
@@ -75,7 +72,7 @@ public static class StyledHierarchy
         var style = new GUIStyle(EditorStyles.label)
         {
             fontStyle = FontStyle.Bold,
-            normal = { textColor = item._textColor }
+            normal = { textColor = item.GetTextColor }
         };
 
         float textOffset = iconWidth + textStartSpace;

@@ -12,8 +12,6 @@ namespace Karianakis.EditTools
     {
 
 
-
-
         static ShortcutManager _instForbidden;
         public static ShortcutManager _inst
         {
@@ -21,25 +19,13 @@ namespace Karianakis.EditTools
             {
                 if (_instForbidden == null)
                 {
-                    // var obj = new GameObject("ShortcutManager");
-
-                    // _instForbidden = obj.AddComponent<ShortcutManager>();
-                    // obj.transform.SetParent(EditSuitFather.GetCanvas(), false);
-
                     _instForbidden = EditSuitFather.GetCanvas().gameObject.AddComponent<ShortcutManager>();
                 }
 
                 return _instForbidden;
 
             }
-            set { _instForbidden = value; }
-
-
         }
-
-
-        HashSet<KeyCode> _CurrentPressedKeys = new();
-        HashSet<KeyCode> _CurrentPressedDownKeys = new();
         List<ShortcutAction> _shortcutList = new();
         [SerializeField] string[] _shortcutDebugArray;
 
@@ -48,32 +34,14 @@ namespace Karianakis.EditTools
         void Update()
         {
 
-            _CurrentPressedKeys.Clear();
-            _CurrentPressedDownKeys.Clear();
-
-            //if (Input.anyKey is false) return;
-            if (GetAnyKey() is false) return;
-
-
-            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
-            {
-
-                if (GetKey(key))
-                    _CurrentPressedKeys.Add(key);
-
-                if (GetKeyDown(key))
-                    _CurrentPressedDownKeys.Add(key);
-            }
+            if (InputManager.GetAnyKey() == false) return;
 
             foreach (var item in _shortcutList)
             {
                 ProcessShortcut(item);
             }
 
-
-
         }
-
 
 
         void DebugShortcuts()
@@ -91,8 +59,33 @@ namespace Karianakis.EditTools
                 }
             }
         }
+        void ProcessShortcut(ShortcutAction shortcut)
+        {
 
-        public static void AddShortcut(ShortcutAction shortcut)
+            bool allKeys = true;
+
+
+
+            foreach (var item in shortcut._keys)
+            {
+                if (InputManager.GetKey(item) == false)
+                    allKeys = false;
+            }
+
+            bool lastKeyDown = InputManager.GetKeyDown(shortcut._keys[shortcut._keys.Length - 1]);
+
+
+            if (allKeys is false) return;
+            if (lastKeyDown is false) return;
+
+
+            shortcut._action.Invoke();
+
+        }
+
+
+        //? EXPOSED
+        internal static void AddShortcut(ShortcutAction shortcut)
         {
 
             if (_inst._shortcutList.Contains(shortcut)) return;
@@ -110,87 +103,8 @@ namespace Karianakis.EditTools
             _inst.DebugShortcuts();
 
         }
-        void ProcessShortcut(ShortcutAction shortcut)
-        {
-
-            /* if multiple shortcuts you dont want only on down .. ..
-             if single looks on down , if multiple ?? 
-             maybe the last one must be on down .. 
-            */
-
-            bool allKeys = true;
-            bool anyKeyDown = false;
-
-
-            foreach (var item in shortcut._keys)
-            {
-                if (_CurrentPressedKeys.Contains(item) is false)
-                    allKeys = false;
-
-                if (_CurrentPressedDownKeys.Contains(item)) anyKeyDown = true;
-            }
-
-            bool lastKeyDown = _CurrentPressedDownKeys.Contains(shortcut._keys[shortcut._keys.Length - 1]);
-
-
-
-
-            if (anyKeyDown is false) return;
-            if (shortcut._anyKeyIsEnough is false)
-            {
-                if (lastKeyDown is false) return;
-                if (allKeys is false) return;
-            }
-
-
-
-            shortcut._action.Invoke();
-
-
-        }
-
-
-
-
-
-
-        public bool GetKey(KeyCode key)
-        {
-#if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
-            // Try new Input System first
-            return UnityEngine.InputSystem.Keyboard.current != null &&
-                   UnityEngine.InputSystem.Keyboard.current[key].isPressed
-                   || Input.GetKey(key);
-#else
-            // Fallback to legacy Input
-            return Input.GetKey(key);
-#endif
-        }
-
-        public static bool GetKeyDown(KeyCode key)
-        {
-#if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
-            return UnityEngine.InputSystem.Keyboard.current != null &&
-                   UnityEngine.InputSystem.Keyboard.current[key].wasPressedThisFrame
-                   || Input.GetKeyDown(key);
-#else
-            return Input.GetKeyDown(key);
-#endif
-        }
-
-        public static bool GetAnyKey()
-        {
-#if ENABLE_INPUT_SYSTEM && INPUT_SYSTEM_PACKAGE
-            return (UnityEngine.InputSystem.Keyboard.current != null &&
-                    UnityEngine.InputSystem.Keyboard.current.anyKey.isPressed)
-                   || Input.anyKey;
-#else
-            return Input.anyKey;
-#endif
-        }
 
 
 
     }
-
 }

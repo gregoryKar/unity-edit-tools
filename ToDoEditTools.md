@@ -1,17 +1,21 @@
 - TODO - PROBLEMS - THOUGHTS
+
 [https://assetstore.unity.com/packages/tools/utilities/quantum-console-211046]
     <!--> το πακετο του αλλου για commands 
+
 > οτι τελειωει το βαζεις σε done για να τα εχεις παρουσιασιμα 
 -   <!--> η βαζεις και ενα ai να σου κανει περιγραφη δυνατοτητες ...
     
 
 
+- shortcuts ???
+
+
+
+
 
 > MAIN 
-
 - scene change issues ??
-- φερε και το απλο για hierarchy color και icon ...
-    <!-->το icon αν δουλευει ..
 - refrash command η και ui κουμπι για να παρει τα νεα [must]
     <!-->ισως και επιλογη για refrash interval ακριβο ..
     στα settings αυτο
@@ -25,11 +29,12 @@
     <!-->για τα πακετα σου MONO που το κοτσαρεις στη σκηνη 
     ανοιγεις και βλεπεις τι κανει για να μαθεις να το δουλευεις 
     maybe spawn it by default in package download
+
+> LATER
 - physiacal world debugg <poly kalo>
     <!-- >με offset και επιλογη να κοιταει τον παικτη 
     (αυτο το transform)
     abstract base και παιδι για ui και μη 
-
 
 
 > DYNAMIC DEBUG     
@@ -61,21 +66,11 @@
     SetFaverite()
     SetUseNullParams -> cast even without input 
         it will handle it ..
-    
     Register ??
 
-- panel for actions [good-but-work...]
-    <!--> more user friendly instead of console thing just 
-    a unity window with buttons with the action name..
-    ability to add favourites , and show only favourites
-    like if you have 50 you must find a way to manage them
-    like now i see these 7 ...
-    ισως ενα panel με κουμπι για mode και πατας και βγαινουν τα
-    κουμπια .. ισως ακομα το text απλα πιο κατω 
-    ισως απλα να χωρανε και τα δυο ετσι απλα ...
 
-- command settings που το παει settings [simple-must]
-    <!-->παραθυρο αλλιως και κουμπι με γραναζι ..
+
+
 
 - να βλεπεις τις τελευαιτες εντολες που εκανες [must]
     <!-- >οπως σε terminals 
@@ -116,8 +111,7 @@
    
 
 
-> TODO 
-- add outline
+> LATER 
 - settings default interval for variables
 - settings color pallete <functionality ready>
     <!--> your colors + 3 custom for user
@@ -127,8 +121,6 @@
    
     option to reset them all
     separate from general reset
-
-> LATER 
 - later
     <!--> icons later ..πχ warning , start 
     , person , happy , angry , simple 
@@ -153,6 +145,15 @@
     - settings option for font size 
 
 > CAN LIVE WITHOUT
+- panel for actions [good-but-work...]
+    <!--> more user friendly instead of console thing just 
+    a unity window with buttons with the action name..
+    ability to add favourites , and show only favourites
+    like if you have 50 you must find a way to manage them
+    like now i see these 7 ...
+    ισως ενα panel με κουμπι για mode και πατας και βγαινουν τα
+    κουμπια .. ισως ακομα το text απλα πιο κατω 
+    ισως απλα να χωρανε και τα δυο ετσι απλα ...
 - errors καπου ρυθμιση - OPTIONAL -
     <!-->για το αν θα ειναι errors / warnings / suppress
 - range from Transform parameter <kalo but not very easy>
@@ -206,4 +207,7 @@
 - να προσαρμωζεται στην αλλαγη οθονης .. [must]
 - too many items dynamic debug handling 
 - all moved to dont destroy on load ??
-   
+- φερε και το απλο για hierarchy color και icon ...
+    <!-->το icon αν δουλευει ..
+- command settings που το παει settings [simple-must]
+    <!-->παραθυρο αλλιως και κουμπι με γραναζι ..

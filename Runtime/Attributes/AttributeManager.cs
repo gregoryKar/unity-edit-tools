@@ -19,6 +19,7 @@ namespace Karianakis.EditTools
   (FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             ScanVariables(behavioursArray);
+            RegisterCheats(behavioursArray);
         }
 
         public static void ScanVariables(MonoBehaviour[] behavioursArray)
@@ -107,48 +108,8 @@ namespace Karianakis.EditTools
             }
         }
 
-        static void RegisterCheats()
+        static void RegisterCheats(MonoBehaviour[] behaviours)
         {
-            // var behaviours = GameObject.FindObjectsByType<MonoBehaviour>
-            // (FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-
-            // foreach (var behaviour in behaviours)
-            // {
-            //     var methods = behaviour.GetType()
-            //         .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            //     foreach (var method in methods)
-            //     {
-            //         var attr = method.GetCustomAttribute<MyCommandAttribute>();
-            //         if (attr != null)
-            //         {
-            //             if (method.GetParameters().Length == 0)
-            //             {
-            //                 Action action = (Action)Delegate.CreateDelegate(
-            //                     typeof(Action),
-            //                     behaviour,
-            //                     method
-            //                 );
-
-            //                 EditTerminal.AddCommand(attr.CommandName, action);
-
-
-            //                 //commands[attr.CommandName] = action;
-            //             }
-            //             else
-            //             {
-            //                 Debug.LogWarning($"Cheat {attr.CommandName} must have no parameters.");
-            //             }
-            //         }
-            //     }
-            // }
-        }
-
-
-        static void RegisterCheatsTwo()
-        {
-            var behaviours = GameObject.FindObjectsByType<MonoBehaviour>
-            (FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             foreach (var behaviour in behaviours)
             {
@@ -161,6 +122,11 @@ namespace Karianakis.EditTools
                     if (attr == null) continue;
 
 
+                    string commandName;
+                    if (attr.GetHasNickname)
+                        commandName = attr.GetCommandName;
+                    else
+                        commandName = method.Name;
 
 
                     var parameters = method.GetParameters();
@@ -178,10 +144,8 @@ namespace Karianakis.EditTools
                         del = Delegate.CreateDelegate(delegateType, behaviour, method);
                     }
 
-                    var command = CommandBuilderUniversal.Create(method.Name, del);
-                    //CommandTerminal.AddCommandInternal(command);
-
-
+                    var command = CommandBuilderUniversal.Create(commandName, del);
+                  
                 }
             }
         }

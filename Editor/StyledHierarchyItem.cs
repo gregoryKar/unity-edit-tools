@@ -4,16 +4,33 @@
 using UnityEditor;
 using UnityEngine;
 
+
+
 [ExecuteAlways]
-public class StyledHierarchyItem : MonoBehaviour
+internal class StyledHierarchyItem : MonoBehaviour
 {
 #if UNITY_EDITOR
-    public bool _skipIcon = false;
-    public bool _customIconBackroundColor = false;
-    public Texture2D _customIcon;
-    public Color _itemBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f);
-    public Color _backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f);
-    public Color _textColor = new Color(.9f, .9f, .9f, 1f);
+    [SerializeField] bool _skipIcon = false;
+    [SerializeField] bool _enableCustomIconBackroundColor = false;
+    [SerializeField] Texture2D _customIcon;
+    [SerializeField] Color _itemBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+    [SerializeField] Color _backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+    [SerializeField] Color _textColor = new Color(.9f, .9f, .9f, 1f);
+
+
+
+    public bool GetEnableCustomIconBackroundColor => _enableCustomIconBackroundColor;
+
+    public Texture2D GetCustomIcon => _customIcon;
+    public Color GetItemBackgroundColor => _itemBackgroundColor;
+    public Color GetBackgroundColor => _backgroundColor;
+    public Color GetTextColor => _textColor;
+
+    
+    public bool HasCustomIcon 
+        => _customIcon != null && _skipIcon == false;
+   
+
 
     private void OnValidate()
     {
@@ -21,6 +38,7 @@ public class StyledHierarchyItem : MonoBehaviour
         {
             EditorGUIUtility.SetIconForObject(gameObject, _customIcon);
         }
+
 #if UNITY_EDITOR
         EditorApplication.RepaintHierarchyWindow();
 #endif

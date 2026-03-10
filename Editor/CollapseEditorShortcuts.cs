@@ -2,6 +2,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.ShortcutManagement;
 
+
+
 static class CollapseEditorShortcuts
 {
     // %#h = Ctrl + Shift + H (Windows)
@@ -127,9 +129,5 @@ static class CollapseEditorShortcuts
         else
             CollapseAll();
 
-
     }
-
-
-
 }

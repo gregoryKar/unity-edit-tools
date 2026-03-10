@@ -5,47 +5,36 @@
 using Karianakis.EditTools;
 using UnityEngine;
 
-public class EditToolsShowcase : MonoBehaviour
+namespace Karianakis.EditTools
 {
 
-
-    void Start()
+    public class EditToolsShowcase : MonoBehaviour
     {
 
-      
 
-      //   DynamicDebug.Simple("code0", "content0", true);
+        void Start()
+        {
 
-      //   DynamicDebug.SayAdvanced(
-      //       code: "code0",
-      //       content: "content0",
-      //       color: default,
-      //       interval: 1f,
-      //        printCount: true,
-      //         Getvissible: () => true,
-      //         Getcollor: () => Color.cyan,
-      //         GetContent: () => "Dynamic content at ",
-      //           tagCode: "testtag",
-      //           tagObjectReference: gameObject
-      //     );
+            DynamicDebug.Create("simple")
+                .SetContent("this will apear on the panel");
+            // you can 
 
-      //   DynamicDebug.SayAdvanced(
-      //    code: "testCode",
-      //    content: "content",
-      //    color: default,
-      //    interval: 1f,
-      //     printCount: true,
-      //      Getvissible: () => true,
-      //      Getcollor: () => Color.white,
-      //      GetContent: () => "Dynamic content px time:" + Time.time,
-      //        tagCode: "testTag",
-      //        tagObjectReference: gameObject
-      //  );
+            DynamicDebug.Create("dislay value that changes over time")
+                .SetColor(Color.cyan)//adds custom color
+                .SetUpdate(1f)// updates the value reapeated
+                .SetDynamicContent(() => "Dynamic content at " + Time.time.
+            ToString("F2"));//gets the new value every time it gets updated
 
 
 
 
+
+        }
+
+        void Update()
+        {
+         
+        }
 
     }
-
 }

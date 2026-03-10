@@ -11,8 +11,6 @@ using UnityEditor.ShortcutManagement;
 static class DockTabSwitcherShortcuts
 {
 
-
-
     // %#h = Ctrl + Shift + H (Windows)
     // % = Ctrl
     // # = Shift
@@ -27,7 +25,7 @@ static class DockTabSwitcherShortcuts
         SwitchTab(1);
     }
 
-    [Shortcut("Tools/Previous Tab Karianakis", KeyCode.A)] 
+    [Shortcut("Tools/Previous Tab Karianakis", KeyCode.A)]
     static void PreviousTab()
     {
         SwitchTab(-1);
