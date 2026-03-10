@@ -9,7 +9,10 @@
 
 
 - shortcuts ???
-
+- testing if i just push something someone using 
+    the last version will get it .. maybe he just
+    gets the commit linked with the package version ...
+    or tag linked with package version ??
 
 
 
