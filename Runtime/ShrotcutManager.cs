@@ -31,6 +31,14 @@ namespace Karianakis.EditTools
 
 
 
+        void Start()
+        {
+            ShortcutAction.Create("test 01", () =>
+            {
+              
+            }, KeyCode.Space, KeyCode.T);
+        }
+
         void Update()
         {
 
