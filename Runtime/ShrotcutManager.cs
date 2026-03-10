@@ -31,23 +31,7 @@ namespace Karianakis.EditTools
 
 
 
-        void Start()
-        {
-            ShortcutAction.Create("---- space t", () =>
-            {
-                Debug.LogError("---- space t");
-            }, KeyCode.Space, KeyCode.T);
-
-            ShortcutAction.Create("---- a", () =>
-         {
-             Debug.LogError("---- a");
-         }, KeyCode.A);
-
-            ShortcutAction.Create("---- <", () =>
-       {
-           Debug.LogError("---- <");
-       }, KeyCode.LeftArrow);
-        }
+      
 
         void Update()
         {
