@@ -86,7 +86,7 @@ namespace Karianakis.EditTools
 
         int _suggestionIndex = -1;
         List<string> _suggestionList = new List<string>();
-        List<CommandBuilderUniversal> _commands = new();
+        List<CustomCommand> _commands = new();
         float _referenceDeltaSizeX;
 
 
@@ -184,9 +184,9 @@ namespace Karianakis.EditTools
 
             StartSetVissibility();
 
-            CommandBuilderUniversal.Create("clc", _terminalLogs.ClearLogs);
-            CommandBuilderUniversal.Create("clear", _terminalLogs.ClearLogs);
-            CommandBuilderUniversal.Create("printAll", PrintAllCommands);
+            CustomCommand.Simple("clc", _terminalLogs.ClearLogs);
+            CustomCommand.Simple("clear", _terminalLogs.ClearLogs);
+            CustomCommand.Simple("printAll", PrintAllCommands);
 
 
 
@@ -292,7 +292,7 @@ namespace Karianakis.EditTools
 
         }
 
-        bool TryGetSelectedCommand(out CommandBuilderUniversal command)
+        bool TryGetSelectedCommand(out CustomCommand command)
         {
             command = null;
             if (_inputWords.Length < 1) return false;
@@ -680,7 +680,7 @@ namespace Karianakis.EditTools
         // }
 
 
-        internal static void AddCommandInternal(CommandBuilderUniversal command)
+        internal static void AddCommandInternal(CustomCommand command)
         {
             _inst._commands.Add(command);
         }

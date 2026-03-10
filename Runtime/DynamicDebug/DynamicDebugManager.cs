@@ -7,7 +7,7 @@ using Karianakis.Utilities;
 
 namespace Karianakis.EditTools
 {
-    public class DynamicDebugManager : MonoBehaviour
+    internal class DynamicDebugManager : MonoBehaviour
     {
 
         static DynamicDebugManager _instForbidden;

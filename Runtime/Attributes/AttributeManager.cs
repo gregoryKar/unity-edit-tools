@@ -144,7 +144,7 @@ namespace Karianakis.EditTools
                         del = Delegate.CreateDelegate(delegateType, behaviour, method);
                     }
 
-                    var command = CommandBuilderUniversal.Create(commandName, del);
+                    var command = CustomCommand.FromDelegage(commandName, del);
                   
                 }
             }
@@ -152,22 +152,7 @@ namespace Karianakis.EditTools
 
 
 
-        static void testWeakReference(FieldInfo field, MonoBehaviour target)
-        {
-            // var weakRef = new WeakReference<MonoBehaviour>(target);
-
-            // return () =>
-            // {
-            //     if (weakRef.TryGetTarget(out var instance) && instance != null)
-            //     {
-            //         return field.GetValue(instance);
-            //     }
-
-            //     return null; // object destroyed or collected
-            // };
-
-
-        }
+       
 
 
 
