@@ -28,7 +28,7 @@ namespace Karianakis.EditTools
             CommandTerminal.AddCommandInternal(this);
         }
 
-        public static CustomCommand FromDelegage(string code, Delegate action)
+        public static CustomCommand FromDelegate(string code, Delegate action)
         {
             var paramTypes = action.Method.GetParameters();
             Type[] types = new Type[paramTypes.Length];

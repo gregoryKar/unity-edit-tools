@@ -144,7 +144,7 @@ namespace Karianakis.EditTools
                         del = Delegate.CreateDelegate(delegateType, behaviour, method);
                     }
 
-                    var command = CustomCommand.FromDelegage(commandName, del);
+                    var command = CustomCommand.FromDelegate(commandName, del);
                   
                 }
             }

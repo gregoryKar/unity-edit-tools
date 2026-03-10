@@ -18,7 +18,7 @@ namespace Karianakis.EditTools
 
             CustomCommand.OneParam<int>("one param command", (a) => Debug.Log($"ONE PARAM COMMAND EXECUTED with param {a}"));
 
-            CustomCommand.FromDelegage("from delegate"
+            CustomCommand.FromDelegate("from delegate"
             , new Action<int, float, string>
             ((a,b,c) => Debug.Log($"{a}{b}{c}")));
 
