@@ -52,7 +52,7 @@ namespace Karianakis.EditTools
         TerminalLogs _terminalLogs;
 
 
-        timeStamp _lastExecuteTime;
+        TimeStamp _lastExecuteTime;
 
         string _rawInputForbidden;
         string rawInput
@@ -477,7 +477,7 @@ namespace Karianakis.EditTools
         {
             if (GetInputIsEmpty) return;
             if (_lastExecuteTime.HasThatAmountPassed(0.2f) == false) return;
-            _lastExecuteTime.setNow();
+            _lastExecuteTime.SetNow();
 
             var wordsList = _inputWords.ToList();
             wordsList.RemoveAt(0);

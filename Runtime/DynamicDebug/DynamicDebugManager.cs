@@ -387,7 +387,7 @@ namespace Karianakis.EditTools
         }
 
         internal static void InvokeItemsReorder()
-                  => invo.simple(_inst.ReorderDebuggItemsDepricated, 0.05f);
+                  => Invo.Simple(_inst.ReorderDebuggItemsDepricated, 0.05f);
 
         internal static void RefreshPage()
                     => _inst.RefreshPageLocal();

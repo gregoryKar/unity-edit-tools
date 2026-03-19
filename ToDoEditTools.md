@@ -7,7 +7,22 @@
 -   <!--> η βαζεις και ενα ai να σου κανει περιγραφη δυνατοτητες ...
     
 
+> 14/3
+- shortcut για change selected window , not between docked ones
+    <!--> like now .. between the ones that have docked ones inside them
+    και μετα ενα για να κλεινεις ενα τετοιο... ανοιγεις το search σε 
+    παει εκει που θες αλλαζεις πισω στο search - close !!
 
+- console command ship.print 
+    <!--> ΓΕΝΙΚΕΥΜΕΝΟ καθε τι να εχει τετοιο και να σου κανει print
+    οσα θελεις πχ πλοιο ονομα και αλλα στοιχεια σημεαντικα
+- print shortcuts μεσο console !! 
+- dyanmic debug βαλε αν δεν βαλεις content να παιρνει απεθυειας το code 
+    <!-->C:
+
+
+
+> OLDER
 - shortcuts ???
 - testing if i just push something someone using 
     the last version will get it .. maybe he just

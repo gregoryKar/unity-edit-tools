@@ -19,13 +19,13 @@ static class DockTabSwitcherShortcuts
     // [Shortcut("Tools/Collapse Everything Kar", KeyCode.F, ShortcutModifiers.Shift)]
 
     // other way to add shortcuts[MenuItem("Tools/Next Tab %#]")] // Ctrl + PageDown
-    [Shortcut("Tools/Next Tab Karianakis", KeyCode.A)] // Ctrl + PageDown
+    [Shortcut("Tools/Next Tab gk")] // Ctrl + PageDown
     static void NextTab()
     {
         SwitchTab(1);
     }
 
-    [Shortcut("Tools/Previous Tab Karianakis", KeyCode.A)]
+    [Shortcut("Tools/Previous Tab gk")]
     static void PreviousTab()
     {
         SwitchTab(-1);

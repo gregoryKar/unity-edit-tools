@@ -80,7 +80,7 @@ namespace Karianakis.EditTools
 
 
 
-        myId _id;
+        MyId _id;
         //bool _printCount;
         int _updateCount = 0;
         int _lastFrame;

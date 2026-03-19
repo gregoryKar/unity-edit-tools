@@ -11,26 +11,26 @@ static class CollapseEditorShortcuts
     // # = Shift
     // & = Alt
 
-    [Shortcut("Tools/Collapse Everything Karianakis", KeyCode.F, ShortcutModifiers.Shift)]
+    [Shortcut("Tools/Collapse Everything gk")]
     private static void CollapseAllShortcut()
     {
         CollapseExpandAllHierarchyItems(false, false);
         CollapseExpandAllInspectorComponents(false);
     }
-    [Shortcut("Tools/Expand Everything Karianakis", KeyCode.G, ShortcutModifiers.Shift)]
+    [Shortcut("Tools/Expand Everything gk")]
     private static void ExpandAllShortcut()
     {
         CollapseExpandAllHierarchyItems(true, false);
         CollapseExpandAllInspectorComponents(true);
     }
 
-    [Shortcut("Tools/Collapse Selected Karianakis", KeyCode.F, ShortcutModifiers.Control)]
+    [Shortcut("Tools/Collapse Selected gk")]
     private static void CollapseSelectedShortcut()
     {
         CollapseExpandAllHierarchyItems(false, true);
         CollapseExpandAllInspectorComponents(false);
     }
-    [Shortcut("Tools/Expand Selected Karianakis", KeyCode.G, ShortcutModifiers.Control)]
+    [Shortcut("Tools/Expand Selected gk")]
     private static void ExpandSelectedShortcut()
     {
         CollapseExpandAllHierarchyItems(true, true);

@@ -16,13 +16,13 @@ namespace Karianakis.EditTools
         public DynamicDebugItem SetContent(string c)
         {
             _content = c;
-            invo.simple(Refresh, 0f);
+            Invo.Simple(Refresh, 0f);
             return this;
         }
         public DynamicDebugItem SetColor(Color c)
         {
             _color = c;
-            invo.simple(Refresh, 0f);
+            Invo.Simple(Refresh, 0f);
             return this;
         }
         public DynamicDebugItem SetDynamicEnabled(Func<bool> c)
@@ -44,9 +44,20 @@ namespace Karianakis.EditTools
         public DynamicDebugItem SetUpdate(float c)
         {
             _interval = c;
-            if (_id != null) invoManager.killAll(_id);
-            else _id = new myId();
-            invo.infinite(Refresh, c, startDelay: 0.05f, id: _id);
+
+            if (_id != null)
+            {
+                InvoManager.KillAll(_id);
+            }
+            else
+            {
+                _id = new MyId();
+            }
+
+            Invo.Infinite(Refresh, c)
+            .SetStartDelay(0.05f)
+            .SetId(_id);
+
             return this;
         }
 
