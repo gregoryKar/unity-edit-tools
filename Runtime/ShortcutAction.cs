@@ -11,38 +11,39 @@ namespace Karianakis.EditTools
 
     public class ShortcutAction
     {
-        public string _commandStringId;
-        public KeyCode[] _keys;
-        public Action _action;
-        //public bool _anyKeyIsEnough;
+        string _commandStringId;
+        Action _action;
 
+        internal string GetCommandStringId => _commandStringId;
+        internal Action GetAction => _action;
 
+        MyKey[] _dualKeys;
+        internal MyKey[] GetDualKeys => _dualKeys;
 
 
         public static void Create(string command, Action action, params KeyCode[] keys)
-        => new ShortcutAction(command, action, keys);//, false
-
-
-        // public static void CreateOptional(string command, Action action, params KeyCode[] keys)
-        // => new ShortcutAction(command, action, keys);//, true
-
-
-
-
-
-
-        private ShortcutAction(string command, Action action, params KeyCode[] keys)// bool anyKeyIsEnough
         {
-
             if (keys == null || keys.Length == 0)
             {
-                Debug.LogError("shortcut " + command + " has no keys assigned");
+                Debug.LogError("shortcut " + command + " has no keysassigned");
                 return;
             }
+            var shortcut = new ShortcutAction(command, action);
 
+            shortcut._dualKeys = new MyKey[keys.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                shortcut._dualKeys[i] = new MyKey(keys[i]);
+            }
+
+        }
+
+        private ShortcutAction(string command, Action action)
+        {
             bool notPlayMode =
                 Application.isEditor && !Application.isPlaying;
             string notInPlayModeWarning = "shortcut " + command + " not in play mode";
+
 #if KARIANAKIS
             if (notPlayMode)
             {
@@ -58,15 +59,11 @@ namespace Karianakis.EditTools
 #endif
 
 
-            this._commandStringId = command;
-            this._keys = keys;
-            this._action = action;
-            //this._anyKeyIsEnough = anyKeyIsEnough;
+            _commandStringId = command;
+            _action = action;
 
             ShortcutManager.AddShortcut(this);
         }
-
-
 
     }
 }

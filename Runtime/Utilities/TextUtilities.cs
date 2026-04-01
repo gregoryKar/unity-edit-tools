@@ -82,6 +82,12 @@ namespace Karianakis.EditTools
                 return (char)('0' + (key - KeyCode.Keypad0));
             // Space
             if (key == KeyCode.Space) return ' ';
+
+            if(key == KeyCode.LeftArrow) return '<';
+            if (key == KeyCode.RightArrow) return '>';
+            if (key == KeyCode.UpArrow) return '^';
+            if (key == KeyCode.DownArrow) return 'v';
+
             // Symbols (US QWERTY)
             if (!shiftPressed)
             {
@@ -114,5 +120,13 @@ namespace Karianakis.EditTools
             // No char mapping
             return '\0';
         }
+
+
+        public static bool IsValidPrintableChar(char c)
+        {
+            return char.IsLetterOrDigit(c) || c == '.' || c == '-';
+        }
+
+
     }
 }

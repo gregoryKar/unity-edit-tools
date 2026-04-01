@@ -5,7 +5,20 @@
 
 > οτι τελειωει το βαζεις σε done για να τα εχεις παρουσιασιμα 
 -   <!--> η βαζεις και ενα ai να σου κανει περιγραφη δυνατοτητες ...
-    
+-   INPUT_SYSTEM_PACKAGE is *UNRELAIABLE* *DONT USE*
+
+
+> 24 /4
+- τα εξτρας τιτλος και disclaimer και size buttons κατω..
+    να εχεις χωρο για logs 
+    πιο μικρα γραμματα να εχεις πολλες γραμμες
+    το selected λιγο πιο δεξια η αρχη και πιο μεγαλο το text
+    πχ 180% 
+- text similarity improved ...
+    πχ print και printShortcuts still no apear .......
+
+
+
 
 > 14/3
 - shortcut για change selected window , not between docked ones

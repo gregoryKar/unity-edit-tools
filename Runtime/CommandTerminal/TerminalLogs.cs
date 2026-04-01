@@ -1,11 +1,14 @@
 
 
 
+using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace Karianakis.EditTools
 {
+    [Serializable]
     public class TerminalLogs
     {
 
@@ -23,15 +26,15 @@ namespace Karianakis.EditTools
         //? INTERNAL
         void RefreshLogs()
         {
-            List<string> lines = new List<string>();
+            StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < _logs.Count; i++)
             {
-                lines.Add(_logs[i].GetDisplayContent());
+                string lineText = $"[{i}]" + _logs[i].GetDisplayContent();
+                sb.AppendLine(lineText);
             }
-
-            _logsAboveText.text = string.Join("\n", lines);
-
+            string result = sb.ToString();
+            _logsAboveText.text = result;
         }
         void RefreshLogsHighlight()
         {
@@ -97,6 +100,20 @@ namespace Karianakis.EditTools
             _logBrowsingIndex = -1;
             RefreshLogsHighlight();
             RefreshLogs();
+        }
+
+        internal void EditPrintAllLogs()
+        {
+            Debug.LogError("EditPrintAllLogs: "+ _logs.Count);
+            for (int i = 0; i < _logs.Count; i++)
+            {
+                int index = i;
+                string content =
+                _logs[i].GetContent;
+
+                Debug.Log(index + " " + content);
+                Debug.Log("[ " + _logs[i].GetDisplayContent() + " ]");
+            }
         }
 
     }

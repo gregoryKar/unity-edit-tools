@@ -18,10 +18,13 @@ namespace Karianakis.EditTools
         /// </summary>
         public static void OpenSettingsPanel()
         {
-            SettingsService.OpenProjectSettings(_path);
+            SettingsService.OpenProjectSettings(GetCompletePath);
         }
-        const string _path = "ProjectEditTools";
-        const string _label = "myLabel";
+        static string GetCompletePath
+            => _unityProjectSettingsPath + "/" + _label;
+                    
+        const string _unityProjectSettingsPath = "Project";
+        const string _label = "KarianakisEditTools";
         const string _showcasePath = "EDIT TOOLS SHOWCASE";
 
         [SettingsProvider]
@@ -33,12 +36,12 @@ namespace Karianakis.EditTools
 
 
             var provider = new SettingsProvider(
-                _path + "/" + _label,
+                GetCompletePath,
                 SettingsScope.Project)
             {
                 label = _label,
                 keywords = new HashSet<string>(new[]
-                    { "EditTools",
+                    {   "EditTools",
              "Karianakis",
              "EDIT" ,
              "edit" ,

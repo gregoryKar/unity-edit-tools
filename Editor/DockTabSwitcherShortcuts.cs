@@ -7,51 +7,53 @@ using System;
 using System.Reflection;
 using System.Collections;
 using UnityEditor.ShortcutManagement;
-
-static class DockTabSwitcherShortcuts
+namespace Karianakis.EditTools
 {
-
-    // %#h = Ctrl + Shift + H (Windows)
-    // % = Ctrl
-    // # = Shift
-    // & = Alt
-
-    // [Shortcut("Tools/Collapse Everything Kar", KeyCode.F, ShortcutModifiers.Shift)]
-
-    // other way to add shortcuts[MenuItem("Tools/Next Tab %#]")] // Ctrl + PageDown
-    [Shortcut("Tools/Next Tab gk")] // Ctrl + PageDown
-    static void NextTab()
+    static class DockTabSwitcherShortcuts
     {
-        SwitchTab(1);
-    }
 
-    [Shortcut("Tools/Previous Tab gk")]
-    static void PreviousTab()
-    {
-        SwitchTab(-1);
-    }
+        // %#h = Ctrl + Shift + H (Windows)
+        // % = Ctrl
+        // # = Shift
+        // & = Alt
 
-    static void SwitchTab(int direction)
-    {
-        var window = EditorWindow.focusedWindow;
-        if (window == null) return;
+        // [Shortcut("Tools/Collapse Everything Kar", KeyCode.F, ShortcutModifiers.Shift)]
 
-        var parentField = typeof(EditorWindow)
-            .GetField("m_Parent", BindingFlags.NonPublic | BindingFlags.Instance);
+        // other way to add shortcuts[MenuItem("Tools/Next Tab %#]")] // Ctrl + PageDown
+        [Shortcut("Tools/Next Tab gk")] // Ctrl + PageDown
+        static void NextTab()
+        {
+            SwitchTab(1);
+        }
 
-        var dockArea = parentField.GetValue(window);
-        if (dockArea == null) return;
+        [Shortcut("Tools/Previous Tab gk")]
+        static void PreviousTab()
+        {
+            SwitchTab(-1);
+        }
 
-        var panesField = dockArea.GetType()
-            .GetField("m_Panes", BindingFlags.NonPublic | BindingFlags.Instance);
+        static void SwitchTab(int direction)
+        {
+            var window = EditorWindow.focusedWindow;
+            if (window == null) return;
 
-        var panes = panesField.GetValue(dockArea) as IList;
-        if (panes == null || panes.Count <= 1) return;
+            var parentField = typeof(EditorWindow)
+                .GetField("m_Parent", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        int currentIndex = panes.IndexOf(window);
-        int nextIndex = (currentIndex + direction + panes.Count) % panes.Count;
+            var dockArea = parentField.GetValue(window);
+            if (dockArea == null) return;
 
-        var nextWindow = panes[nextIndex] as EditorWindow;
-        nextWindow?.Focus();
+            var panesField = dockArea.GetType()
+                .GetField("m_Panes", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var panes = panesField.GetValue(dockArea) as IList;
+            if (panes == null || panes.Count <= 1) return;
+
+            int currentIndex = panes.IndexOf(window);
+            int nextIndex = (currentIndex + direction + panes.Count) % panes.Count;
+
+            var nextWindow = panes[nextIndex] as EditorWindow;
+            nextWindow?.Focus();
+        }
     }
 }

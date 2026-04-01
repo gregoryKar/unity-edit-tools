@@ -1,3 +1,16 @@
 {
-	"name": "KarianakisEditor"
+    "name": "KarianakisEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e2d676a5a8720f346a8ec5e47309d2f6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

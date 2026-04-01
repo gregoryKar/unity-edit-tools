@@ -2,132 +2,134 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.ShortcutManagement;
 
-
-
-static class CollapseEditorShortcuts
+namespace Karianakis.EditTools
 {
-    // %#h = Ctrl + Shift + H (Windows)
-    // % = Ctrl
-    // # = Shift
-    // & = Alt
+    static class CollapseEditorShortcuts
+    {
+        // %#h = Ctrl + Shift + H (Windows)
+        // % = Ctrl
+        // # = Shift
+        // & = Alt
 
-    [Shortcut("Tools/Collapse Everything gk")]
-    private static void CollapseAllShortcut()
-    {
-        CollapseExpandAllHierarchyItems(false, false);
-        CollapseExpandAllInspectorComponents(false);
-    }
-    [Shortcut("Tools/Expand Everything gk")]
-    private static void ExpandAllShortcut()
-    {
-        CollapseExpandAllHierarchyItems(true, false);
-        CollapseExpandAllInspectorComponents(true);
-    }
+        [Shortcut("Tools/Collapse Everything gk")]
 
-    [Shortcut("Tools/Collapse Selected gk")]
-    private static void CollapseSelectedShortcut()
-    {
-        CollapseExpandAllHierarchyItems(false, true);
-        CollapseExpandAllInspectorComponents(false);
-    }
-    [Shortcut("Tools/Expand Selected gk")]
-    private static void ExpandSelectedShortcut()
-    {
-        CollapseExpandAllHierarchyItems(true, true);
-        CollapseExpandAllInspectorComponents(true);
-    }
-
-
-    // Collapses all components in the currently focused HIERARCHY window.
-    public static void CollapseExpandAllHierarchyItems
-        (bool value, bool selectedOnly)
-    {
-        var hierarchy = EditorWindow.focusedWindow;
-        if (hierarchy == null || hierarchy.titleContent.text != "Hierarchy")
+        private static void CollapseAllShortcut()
         {
-            Debug.LogWarning("Focus the Hierarchy window first.");
-            return;
+            CollapseExpandAllHierarchyItems(false, false);
+            CollapseExpandAllInspectorComponents(false);
+        }
+        [Shortcut("Tools/Expand Everything gk")]
+        private static void ExpandAllShortcut()
+        {
+            CollapseExpandAllHierarchyItems(true, false);
+            CollapseExpandAllInspectorComponents(true);
         }
 
-        var type = typeof(EditorWindow).Assembly.GetType("UnityEditor.SceneHierarchyWindow");
-        var setExpandedRecursive = type.GetMethod("SetExpandedRecursive",
-            System.Reflection.BindingFlags.Instance |
-            System.Reflection.BindingFlags.Public |
-            System.Reflection.BindingFlags.NonPublic);
-
-        if (setExpandedRecursive == null)
+        [Shortcut("Tools/Collapse Selected gk")]
+        private static void CollapseSelectedShortcut()
         {
-            Debug.LogError("Could not find SetExpandedRecursive method via reflection.");
-            return;
+            CollapseExpandAllHierarchyItems(false, true);
+            CollapseExpandAllInspectorComponents(false);
+        }
+        [Shortcut("Tools/Expand Selected gk")]
+        private static void ExpandSelectedShortcut()
+        {
+            CollapseExpandAllHierarchyItems(true, true);
+            CollapseExpandAllInspectorComponents(true);
         }
 
-        if (selectedOnly)
+
+        // Collapses all components in the currently focused HIERARCHY window.
+        public static void CollapseExpandAllHierarchyItems
+            (bool value, bool selectedOnly)
         {
-            foreach (var obj in Selection.gameObjects)
+            var hierarchy = EditorWindow.focusedWindow;
+            if (hierarchy == null || hierarchy.titleContent.text != "Hierarchy")
             {
-                setExpandedRecursive.Invoke(hierarchy, new object[] { obj.GetInstanceID(), value });
-            }
-        }
-        else
-        {
-            foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
-            {
-                setExpandedRecursive.Invoke(hierarchy, new object[] { go.GetInstanceID(), value });
-            }
-        }
-
-    }
-
-
-
-    // Collapses all components in the currently focused Inspector window.
-    public static void CollapseExpandAllInspectorComponents(bool value)
-    {
-        var inspector = EditorWindow.focusedWindow;
-        if (inspector == null)
-        {
-            //Debug.LogWarning("Focus the Inspector window first.");
-            return;
-        }
-        var inspectorType = typeof(Editor).Assembly.GetType("UnityEditor.InspectorWindow");
-        if (inspectorType == null || !inspectorType.IsInstanceOfType(inspector))
-        {
-            //Debug.LogWarning("Focused window is not an Inspector window.");
-            return;
-        }
-
-        void CollapseAll()
-        {
-
-            var collapseMethod = inspectorType.GetMethod("CollapseAllComponents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-
-            if (collapseMethod == null)
-            {
-                Debug.LogError("Could not find CollapseAllComponents method via reflection.");
+                Debug.LogWarning("Focus the Hierarchy window first.");
                 return;
             }
-            collapseMethod.Invoke(inspector, null);
 
-        }
+            var type = typeof(EditorWindow).Assembly.GetType("UnityEditor.SceneHierarchyWindow");
+            var setExpandedRecursive = type.GetMethod("SetExpandedRecursive",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic);
 
-        void ExpandAll()
-        {
-
-            var expandMethod = inspectorType.GetMethod("ExpandAllComponents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-
-            if (expandMethod == null)
+            if (setExpandedRecursive == null)
             {
-                Debug.LogError("Could not find ExpandAllComponents method via reflection.");
+                Debug.LogError("Could not find SetExpandedRecursive method via reflection.");
                 return;
             }
-            expandMethod.Invoke(inspector, null);
+
+            if (selectedOnly)
+            {
+                foreach (var obj in Selection.gameObjects)
+                {
+                    setExpandedRecursive.Invoke(hierarchy, new object[] { obj.GetInstanceID(), value });
+                }
+            }
+            else
+            {
+                foreach (var go in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                {
+                    setExpandedRecursive.Invoke(hierarchy, new object[] { go.GetInstanceID(), value });
+                }
+            }
 
         }
 
-        if (value)
-            ExpandAll();
-        else
-            CollapseAll();
 
+
+        // Collapses all components in the currently focused Inspector window.
+        public static void CollapseExpandAllInspectorComponents(bool value)
+        {
+            var inspector = EditorWindow.focusedWindow;
+            if (inspector == null)
+            {
+                //Debug.LogWarning("Focus the Inspector window first.");
+                return;
+            }
+            var inspectorType = typeof(Editor).Assembly.GetType("UnityEditor.InspectorWindow");
+            if (inspectorType == null || !inspectorType.IsInstanceOfType(inspector))
+            {
+                //Debug.LogWarning("Focused window is not an Inspector window.");
+                return;
+            }
+
+            void CollapseAll()
+            {
+
+                var collapseMethod = inspectorType.GetMethod("CollapseAllComponents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+
+                if (collapseMethod == null)
+                {
+                    Debug.LogError("Could not find CollapseAllComponents method via reflection.");
+                    return;
+                }
+                collapseMethod.Invoke(inspector, null);
+
+            }
+
+            void ExpandAll()
+            {
+
+                var expandMethod = inspectorType.GetMethod("ExpandAllComponents", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+
+                if (expandMethod == null)
+                {
+                    Debug.LogError("Could not find ExpandAllComponents method via reflection.");
+                    return;
+                }
+                expandMethod.Invoke(inspector, null);
+
+            }
+
+            if (value)
+                ExpandAll();
+            else
+                CollapseAll();
+
+        }
     }
 }

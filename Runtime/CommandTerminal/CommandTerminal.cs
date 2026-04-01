@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Karianakis.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,7 +50,7 @@ namespace Karianakis.EditTools
         RectTransform _containerRect;
         GameObject _kidContainerObj;
         CommandTerminalReferences _references;
-        TerminalLogs _terminalLogs;
+        [SerializeField] TerminalLogs _terminalLogs;
 
 
         TimeStamp _lastExecuteTime;
@@ -162,10 +163,6 @@ namespace Karianakis.EditTools
             _typeColors[typeof(string)] = _stringColor;
 
 
-
-            // AddCommand("test", () => Debug.Log("chat suggested : marinakis is the best .. after i said marinakis"));
-
-
             ShortcutAction.Create("EditConsoleToggle", () => ReverseVisibility(), _toggleKeys);
 
 
@@ -187,57 +184,93 @@ namespace Karianakis.EditTools
             CustomCommand.Simple("clear", _terminalLogs.ClearLogs);
             CustomCommand.Simple("printAll", PrintAllCommands);
 
+            CustomCommand.Simple("printShortcuts", () =>
+            {
+                string[] allShortcuts
+                    = ShortcutManager._inst.GetAllShortutsInformation();
+                for (int i = 0; i < allShortcuts.Length; i++)
+                {
+                    _terminalLogs.AddLogLine(allShortcuts[i], $".");
+                }
+
+                _terminalLogs.EditPrintAllLogs();
+            });
 
 
-            // CommandBuilderUniversal.Create("fromDelegate"
-            // , (Action<int, string>)((a, b) => { Debug.Log($"{a} {b}"); }));
+            CustomCommand.OneParam<int>("testLogs", (int value) =>
+            {
+                for (int i = 0; i < value; i++)
+                {
+                    _terminalLogs.AddLogLine("test log " + i, ">> ", color: Color.green);
+                }
+            });
+            CustomCommand.OneParam<int>("testInvoLogs", (int number) =>
+           {
+               InvoAdvanced.Repeat((invaki) =>
+               {
+                   _terminalLogs.AddLogLine("test invo log " + invaki.GetIterationIndex, ">> ", color: Color.green);
 
-            // CommandBuilderUniversal.Create("labda"
-            //        , () => { Debug.Log($"--"); });
-            // CommandBuilderUniversal.Create("labdaTwoParams"
-            //        , (int a, int b) => { Debug.Log($"{a} {b}"); });
+               }, 0.1f, number);
+           });
 
             rawInput = "";// to refresh the suggestions and logs and all that stuff and make sure everything is ok at the start
-
         }
-
+        int _continuesDeletePressedFrames;
+        const int _minDeleteFramesRequired = 20;
         void Update()
         {
 
             if (GetVisibilityStatus is false) return;
 
-            if (InputManager.GetAnyKeyAnyState() == false) return;
+            if (InputManager.GetAnyKeyThisFrame() == false &&
+                InputManager.GetKey(new MyKey(KeyCode.Backspace)) == false)
+            {
+                _continuesDeletePressedFrames = 0;
+                return;
+            }
 
-
-
-            if (InputManager.GetKeyDown(KeyCode.KeypadEnter)
-            || InputManager.GetKeyDown(KeyCode.Return))
+            if (InputManager.GetKeyDown(new MyKey(KeyCode.KeypadEnter))
+            || InputManager.GetKeyDown(new MyKey(KeyCode.Return)))
             {
                 Execute();
-                return;
             }
-            if (InputManager.GetKey(KeyCode.Backspace))
+            else if (InputManager.GetKeyDown(new MyKey(KeyCode.Backspace)))
             {
                 if (rawInput.Length < 1) return;
-                if (InputManager.GetKey(KeyCode.Space))
+                if (InputManager.GetKey(new MyKey(KeyCode.Space)))
+                {
                     rawInput = "";
+                }
                 else
+                {
                     rawInput = rawInput.Substring(0, rawInput.Length - 1);
-
-                return;
+                }
             }
-
-            if (InputManager.GetCharsPressedNow
-                          (out char[] chars) == false) return;
-
-            foreach (char c in chars)
+            else if (InputManager.GetKey(new MyKey(KeyCode.Backspace)))
             {
-                rawInput += c;
+                _continuesDeletePressedFrames++;
+                if (_continuesDeletePressedFrames > _minDeleteFramesRequired)
+                {
+                    if (rawInput.Length > 0)
+                    {
+                        rawInput = rawInput.Substring(0, rawInput.Length - 1);
+                    }
+                }
             }
+            else
+            {
+                var charList = CharInputManager._inst.GetCharsThisFrame();
+                if (charList.Count == 0) return;
 
+                foreach (char c in charList)
+                {
+                    if (c == ' ' || TextUtilities.IsValidPrintableChar(c))
+                    {
+                        rawInput += c;
+                    }
+                }
+            }
         }
-
-
 
 
         bool GetStartVisibility()

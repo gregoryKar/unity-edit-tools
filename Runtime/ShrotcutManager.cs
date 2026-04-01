@@ -1,19 +1,14 @@
-
-
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Karianakis.EditTools
 {
-
     internal class ShortcutManager : MonoBehaviour
     {
 
 
         static ShortcutManager _instForbidden;
-        public static ShortcutManager _inst
+        internal static ShortcutManager _inst
         {
             get
             {
@@ -31,63 +26,91 @@ namespace Karianakis.EditTools
 
 
 
-      
-
         void Update()
         {
-
-            if (InputManager.GetAnyKeyAnyState() == false) return;
-
+            if (InputManager.GetAnyKeyThisFrame() == false) return;
 
             foreach (var item in _shortcutList)
             {
                 ProcessShortcut(item);
             }
-
         }
 
 
-        void DebugShortcuts()
+        internal string[] GetAllShortutsInformation()
         {
-
             _shortcutDebugArray = new string[_shortcutList.Count];
             for (int i = 0; i < _shortcutList.Count; i++)
             {
-                _shortcutDebugArray[i] = _shortcutList[i]._commandStringId;
+                _shortcutDebugArray[i] =
+                    _shortcutList[i].GetCommandStringId + " = ";
 
-                _shortcutDebugArray[i] += " :: ";
-                foreach (var item in _shortcutList[i]._keys)
+                for (int key = 0; key < _shortcutList[i].GetDualKeys.Length
+                ; key++)
                 {
-                    _shortcutDebugArray[i] += "-" + item.ToString();
+                    string extra;
+                    string keyString = _shortcutList[i].GetDualKeys[key].GetKeyString();
+
+                    switch(keyString)
+                    {
+                        case "\0":
+                            extra = " NULL";
+                            break;
+                        case "<":
+                            extra = " LEFT-ARROW";
+                            break;
+                        case ">":
+                            extra = " RIGHT-ARROW";
+                            break;
+                        case "^":
+                            extra = " UP-ARROW";
+                            break;
+                        case "v":
+                            extra = " DOWN-ARROW";
+                            break;
+                        case " ":
+                            extra = " SPACE";   
+                            break;
+                        default:
+                            extra = " " + keyString;
+                            break;
+                    }
+                    _shortcutDebugArray[i] += extra;
                 }
+
             }
+            return _shortcutDebugArray;
+
         }
+
+
         void ProcessShortcut(ShortcutAction shortcut)
         {
-            int keysCount = shortcut._keys.Length;
-           if( InputManager.GetKeyDown
-            (shortcut._keys[keysCount - 1]) == false)
-           return;
+            int keysCount = shortcut.GetDualKeys.Length;
+            if (InputManager.GetKeyDown
+                (shortcut.GetDualKeys[keysCount - 1]) == false)
+                return;
 
 
-            if (keysCount == 1) 
+            if (keysCount == 1)
             {
                 // last down is enough 
-             shortcut._action.Invoke();
+                shortcut.GetAction.Invoke();
             }
             else
             {
                 // last down asumed
                 // checks all but the last if being held down
-                for(int i = 0 ; i < keysCount -1 ; i ++)
+                for (int i = 0; i < keysCount - 1; i++)
                 {
-                    if (InputManager.GetKey(shortcut._keys[i]) == false)
+
+                    if (InputManager.GetKey(shortcut.GetDualKeys[i]) == false)
                         return;
                 }
-             shortcut._action.Invoke();
+                shortcut.GetAction.Invoke();
             }
 
-         
+
 
 
 
@@ -106,18 +129,15 @@ namespace Karianakis.EditTools
 
             foreach (var item in _inst._shortcutList)
             {
-                if (item._commandStringId == shortcut._commandStringId)
+                if (item.GetCommandStringId == shortcut.GetCommandStringId)
                 {
-                    Debug.LogError("Shortcut with command string id " + shortcut._commandStringId + " already exists. Skipping adding this shortcut.");
+                    Debug.LogError("Shortcut with command string id " + shortcut.GetCommandStringId + " already exists. Skipping adding this shortcut.");
                     return;
                 }
             }
 
             _inst._shortcutList.Add(shortcut);
-            _inst.DebugShortcuts();
-
         }
-
 
 
     }

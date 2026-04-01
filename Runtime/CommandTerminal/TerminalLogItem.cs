@@ -29,11 +29,11 @@ namespace Karianakis.EditTools
         }
 
         //? VARS
-        string _content;
-        string _prefix;
-        Color _color;
-        bool _customColor;
-        bool _highlighted; // to highlight the log when browsing through logs with arrows
+        [SerializeField]string _content;
+        [SerializeField]string _prefix;
+        [SerializeField]Color _color;
+        [SerializeField]bool _customColor;
+        [SerializeField]bool _highlighted; // to highlight the log when browsing through logs with arrows
 
         //? GETTERS
         public string GetContent => _content;
