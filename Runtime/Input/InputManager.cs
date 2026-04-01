@@ -98,10 +98,11 @@ namespace Karianakis.EditTools
 #if ENABLE_LEGACY_INPUT_MANAGER
         if(down)
         {
-            if (Input.GetKeyDown(key.oldKey))
+            if (Input.GetKeyDown(key._oldKey))
                 return true;
         }
-        else if (Input.GetKey(key.oldKey))
+        else if (Input.GetKey(key._oldKey))
+        {
             return true;
         }
 #endif
