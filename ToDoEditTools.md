@@ -225,20 +225,23 @@
 
 
 > DONE
-- if not tag parameters given still has tag : the defalt tag ...
-- debug items listen for tag change
-- to work with both input systems .....
-- in case of making debug with same code what do you do
-- WATCH VARIABLE ATTRIBUTE
-- add the collapse shortcut .. amazing .. 
-    <!-->already both hierarch and inspector
-    TAB SWITCHING DONE ALSO !!!
-- debugger open settings 
-- edit tools if no canvas just make one... [must]
-- να προσαρμωζεται στην αλλαγη οθονης .. [must]
-- too many items dynamic debug handling 
-- all moved to dont destroy on load ??
-- φερε και το απλο για hierarchy color και icon ...
-    <!-->το icon αν δουλευει ..
-- command settings που το παει settings [simple-must]
-    <!-->παραθυρο αλλιως και κουμπι με γραναζι ..
+- COMPLETED SHOW TO OTHERS DISPLAY !! ADVERTISE
+    <!--> if not tag parameters given still has tag : the defalt tag ...
+    - debug items listen for tag change
+    - to work with both input systems .....
+    - in case of making debug with same code what do you do
+    - WATCH VARIABLE ATTRIBUTE
+    - add the collapse shortcut .. amazing .. 
+        already both hierarch and inspector
+        TAB SWITCHING DONE ALSO !!!
+    - debugger open settings 
+    - edit tools if no canvas just make one... [must]
+    - να προσαρμωζεται στην αλλαγη οθονης .. [must]
+    - too many items dynamic debug handling 
+    - all moved to dont destroy on load ??
+    - φερε και το απλο για hierarchy color και icon ...
+        το icon αν δουλευει ..
+    - command settings που το παει settings [simple-must]
+        παραθυρο αλλιως και κουμπι με γραναζι ..
+    - hilight hierarchy item through runtime C# anytime GREAT
+        like watch me i have error = POP RED !!!
