@@ -156,7 +156,7 @@ namespace Karianakis.EditTools
         void SetFinalText()
         {
 
-            string startContent = _nickname + " - "; ;
+            string startContent = _nickname + " - "; 
             string finalText = startContent + _content;
 
             if (DynamicDebugManager.GetAllExtrasVissibility)//end info or other extras to be printed
@@ -179,9 +179,9 @@ namespace Karianakis.EditTools
 
             _tmp.text = finalText;
 
-            TextUtilities.StyleAfterFirstLine
-                                       (_tmp
-                                       , GetSecondLineColor);
+            // TextUtilities.StyleAfterFirstLine
+            //                            (_tmp, GetSecondLineColor);
+                                       
 
             string tittleColor = ColorUtility.ToHtmlStringRGB(_color);
             string afterRenderText = _tmp.text;

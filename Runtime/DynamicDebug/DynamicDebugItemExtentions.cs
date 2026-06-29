@@ -41,13 +41,13 @@ namespace Karianakis.EditTools
             return this;
         }
 
-        public DynamicDebugItem SetUpdate(float c)
+        public DynamicDebugItem SetInterval(float c)
         {
             _interval = c;
 
             if (_id != null)
             {
-                InvoManager.KillAll(_id);
+                InvoManager.CancelAll(_id);
             }
             else
             {

@@ -20,6 +20,9 @@ namespace Karianakis.EditTools
 
 
         //?  FIELDS
+        public KeyCode _testKey = KeyCode.F1;
+        public KeyCode _testKeyTwo = KeyCode.F1;
+
         public bool _dunamicDebugShowMonobhaviourNames;
         const bool _dunamicDebugShowMonobhaviourNamesDefault = true;
         public int _dynamicDebugPageDisplayCount

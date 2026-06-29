@@ -95,7 +95,7 @@ namespace Karianakis.EditTools
                                 else
                                     return false;
                             })
-                            .SetUpdate(interval);
+                            .SetInterval(interval);
 
 
                     //this was for no interval now default is i make it have by defaulat an interval and if the user set it in attribute it will use that if not it will use 0.25f

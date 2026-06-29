@@ -22,7 +22,7 @@ namespace Karianakis.EditTools
         }
         static string GetCompletePath
             => _unityProjectSettingsPath + "/" + _label;
-                    
+
         const string _unityProjectSettingsPath = "Project";
         const string _label = "KarianakisEditTools";
         const string _showcasePath = "EDIT TOOLS SHOWCASE";
@@ -54,28 +54,41 @@ namespace Karianakis.EditTools
 
                     EditorGUI.BeginChangeCheck();
 
-                    EditorGUILayout.HelpBox(
-                   "hallo my noob friend",
-                   MessageType.Info);
+                    //     EditorGUILayout.HelpBox(
+                    //    "hallo my noob friend",
+                    //    MessageType.Info);
 
 
                     EditorGUILayout.HelpBox(
                    "Dynamic Debug Settings",
                    MessageType.Info);
+                    EditorGUILayout.Space(5);
+
 
                     settings._dynamicDebugPageDisplayCount =
                  EditorGUILayout.IntField("DegugPageCount", settings._dynamicDebugPageDisplayCount);
+
+                    settings._testKey =
+           (KeyCode)EditorGUILayout.EnumPopup("Toggle Shortcut", settings._testKey);
+
+
+
 
                     settings._dunamicDebugShowMonobhaviourNames =
               EditorGUILayout.Toggle("Debug Items Show MonoBehaviour Names", settings._dunamicDebugShowMonobhaviourNames);
 
 
+                    EditorGUILayout.Space(15);
                     EditorGUILayout.HelpBox(
                    "Terminal Settings",
                    MessageType.Info);
+                    EditorGUILayout.Space(5);
 
                     settings._terminalMaxLogs =
                 EditorGUILayout.IntField("TerminalMaxLogs", settings._terminalMaxLogs);
+
+                    settings._testKeyTwo =
+      (KeyCode)EditorGUILayout.EnumPopup("Toggle Shortcut", settings._testKeyTwo);
 
 
 
